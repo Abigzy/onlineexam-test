@@ -1,0 +1,225 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","144","test_workbench_without_exam","scripts","Fri Nov 06 01:12:25 CST 2026","passed","Fri Nov 06 01:12:25 CST 2026","TestWorkbench","test_l1_grading","",""
+"","374","test_future_exam_disabled","scripts","Fri Nov 06 01:09:01 CST 2026","passed","Fri Nov 06 01:09:02 CST 2026","TestExamResume","test_l1_exam","",""
+"","135892","test_last_page_next_disabled","scripts","Fri Nov 06 01:03:02 CST 2026","passed","Fri Nov 06 01:05:18 CST 2026","TestQuestionBankList","test_l1_bank","",""
+"","397","test_scoreboard_filter_classroom","scripts","Fri Nov 06 01:11:46 CST 2026","passed","Fri Nov 06 01:11:47 CST 2026","TestScoreboard","test_l1_grading","",""
+"","469","test_monitor_tab_filter","scripts","Fri Nov 06 01:11:17 CST 2026","passed","Fri Nov 06 01:11:17 CST 2026","TestExamMonitor","test_l1_exam_manage","",""
+"","603","test_submit_objective","scripts","Fri Nov 06 01:14:49 CST 2026","passed","Fri Nov 06 01:14:49 CST 2026","TestPracticeInteraction","test_l1_study","",""
+"","449","test_exam_list","scripts","Fri Nov 06 00:59:37 CST 2026","passed","Fri Nov 06 00:59:38 CST 2026","TestExamManage","test_l0_smoke","",""
+"","695","test_other_class_blocked","scripts","Fri Nov 06 01:07:08 CST 2026","passed","Fri Nov 06 01:07:09 CST 2026","TestStudentClassroom","test_l1_class","",""
+"","1856","test_duplicate_username","scripts","Fri Nov 06 01:00:02 CST 2026","passed","Fri Nov 06 01:00:03 CST 2026","TestUserCreate","test_l1_admin","",""
+"","1545","test_duplicate_username","scripts","Fri Nov 06 01:02:08 CST 2026","passed","Fri Nov 06 01:02:10 CST 2026","TestRegister","test_l1_auth","",""
+"用例原文是「成绩单分页」——实测**没有分页**（一次拉全部），
+
+        所以改成验证同类的稳定性：点「刷新」后统计与行数不变、无 JS 错误。
+        ","486","test_scoreboard_reload","scripts","Fri Nov 06 01:11:55 CST 2026","passed","Fri Nov 06 01:11:55 CST 2026","TestScoreboard","test_l1_grading","",""
+"","2022","test_finalize_attempt","scripts","Fri Nov 06 01:12:18 CST 2026","passed","Fri Nov 06 01:12:21 CST 2026","TestWorkbench","test_l1_grading","",""
+"","395","test_classroom_list","scripts","Fri Nov 06 00:59:24 CST 2026","passed","Fri Nov 06 00:59:25 CST 2026","TestClassroom","test_l0_smoke","",""
+"","831","test_filter_by_type","scripts","Fri Nov 06 01:02:40 CST 2026","passed","Fri Nov 06 01:02:41 CST 2026","TestQuestionBankList","test_l1_bank","",""
+"","609","test_redo","scripts","Fri Nov 06 01:15:01 CST 2026","passed","Fri Nov 06 01:15:02 CST 2026","TestPracticeInteraction","test_l1_study","",""
+"","305","test_logged_in_visit_login_redirects","scripts","Fri Nov 06 01:01:46 CST 2026","passed","Fri Nov 06 01:01:46 CST 2026","TestRegister","test_l1_auth","",""
+"","409","test_scoreboard_stats","scripts","Fri Nov 06 01:11:42 CST 2026","passed","Fri Nov 06 01:11:42 CST 2026","TestScoreboard","test_l1_grading","",""
+"","802","test_grading_queue","scripts","Fri Nov 06 00:59:41 CST 2026","passed","Fri Nov 06 00:59:42 CST 2026","TestGrading","test_l0_smoke","",""
+"","849","test_multiple_choice_multi_select","scripts","Fri Nov 06 01:07:51 CST 2026","passed","Fri Nov 06 01:07:52 CST 2026","TestExamAnswering","test_l1_exam","",""
+"","933","test_monitor_only_suspicious","scripts","Fri Nov 06 01:11:22 CST 2026","passed","Fri Nov 06 01:11:23 CST 2026","TestExamMonitor","test_l1_exam_manage","",""
+"","1481","test_finalize_without_grading","scripts","Fri Nov 06 01:12:29 CST 2026","passed","Fri Nov 06 01:12:31 CST 2026","TestWorkbench","test_l1_grading","",""
+"","2166","test_paging","scripts","Fri Nov 06 01:02:56 CST 2026","passed","Fri Nov 06 01:02:58 CST 2026","TestQuestionBankList","test_l1_bank","",""
+"","393","test_my_exams_cards","scripts","Fri Nov 06 00:58:59 CST 2026","passed","Fri Nov 06 00:58:59 CST 2026","TestExamLoop","test_l0_smoke","",""
+"","606","test_monitor_overview","scripts","Fri Nov 06 01:11:12 CST 2026","passed","Fri Nov 06 01:11:12 CST 2026","TestExamMonitor","test_l1_exam_manage","",""
+"","1520","test_switch_exam_refreshes","scripts","Fri Nov 06 01:00:44 CST 2026","passed","Fri Nov 06 01:00:45 CST 2026","TestAnalytics","test_l1_analytics","",""
+"","593","test_knowledge_tree_rendered","scripts","Fri Nov 06 01:05:56 CST 2026","passed","Fri Nov 06 01:05:56 CST 2026","TestKnowledgePoint","test_l1_bank","",""
+"","1326","test_bug02_partial_options_savable","scripts","Fri Nov 06 01:16:12 CST 2026","passed","Fri Nov 06 01:16:14 CST 2026","TestBug02Guard","test_regressions","",""
+"","2463","test_edit_stem","scripts","Fri Nov 06 01:05:36 CST 2026","passed","Fri Nov 06 01:05:38 CST 2026","TestQuestionEditor","test_l1_bank","",""
+"","1003","test_pager_boundary","scripts","Fri Nov 06 01:11:06 CST 2026","passed","Fri Nov 06 01:11:07 CST 2026","TestExamList","test_l1_exam_manage","",""
+"","3066","test_preview_dry_run","scripts","Fri Nov 06 01:12:46 CST 2026","passed","Fri Nov 06 01:12:49 CST 2026","TestComposeWorkbench","test_l1_paper","",""
+"","689","test_bug01_unreferenced_draft_paper_still_deletable","scripts","Fri Nov 06 01:16:10 CST 2026","passed","Fri Nov 06 01:16:11 CST 2026","TestClosedDefects","test_regressions","",""
+"","871","test_load_paper_prefilled","scripts","Fri Nov 06 01:13:17 CST 2026","passed","Fri Nov 06 01:13:18 CST 2026","TestPaperEditor","test_l1_paper","",""
+"用**一次性账号**改姓名，不动演示库的 student（纪律 3：造数不污染）。","1533","test_profile_rename","scripts","Fri Nov 06 01:02:02 CST 2026","passed","Fri Nov 06 01:02:04 CST 2026","TestRegister","test_l1_auth","",""
+"","3556","test_timer_counts_down","scripts","Fri Nov 06 01:09:14 CST 2026","passed","Fri Nov 06 01:09:18 CST 2026","TestExamResume","test_l1_exam","",""
+"","411","test_result_score_hidden","scripts","Fri Nov 06 01:09:26 CST 2026","passed","Fri Nov 06 01:09:26 CST 2026","TestExamResult","test_l1_exam","",""
+"","9612","test_add_question_from_picker","scripts","Fri Nov 06 01:13:22 CST 2026","passed","Fri Nov 06 01:13:32 CST 2026","TestPaperEditor","test_l1_paper","",""
+"","809","test_teacher_login_nav","scripts","Fri Nov 06 00:58:44 CST 2026","passed","Fri Nov 06 00:58:45 CST 2026","TestAuth","test_l0_smoke","",""
+"用例原预期""打开新窗口（句柄 +1）""，实测口径调整为验证导出调用参数。
+
+        headless 下 `window.open` 是否真的产出新窗口取决于弹窗策略与用户手势判定，
+        属浏览器行为；被测系统该保证的是""点导出会用正确地址、新标签页打开""。
+        ","749","test_export_opens_new_window","scripts","Fri Nov 06 01:13:59 CST 2026","passed","Fri Nov 06 01:14:00 CST 2026","TestPaperList","test_l1_paper","",""
+"","394","test_exhausted_exam_disabled","scripts","Fri Nov 06 01:09:05 CST 2026","passed","Fri Nov 06 01:09:06 CST 2026","TestExamResume","test_l1_exam","",""
+"","365","test_teacher_manage_redirect","scripts","Fri Nov 06 01:14:17 CST 2026","passed","Fri Nov 06 01:14:17 CST 2026","TestRoleIsolation","test_l1_security","",""
+"","690","test_pager_disabled_when_single_page","scripts","Fri Nov 06 01:14:04 CST 2026","passed","Fri Nov 06 01:14:05 CST 2026","TestPaperList","test_l1_paper","",""
+"","88","test_anonymous_profile_redirect","scripts","Fri Nov 06 01:14:35 CST 2026","passed","Fri Nov 06 01:14:35 CST 2026","TestAnonymousAndLeakage","test_l1_security","",""
+"","351","test_wrong_book_empty","scripts","Fri Nov 06 01:16:01 CST 2026","passed","Fri Nov 06 01:16:01 CST 2026","TestWrongBook","test_l1_study","",""
+"勾选叶子知识点 → 题池收敛、勾选可撤销。
+
+        这条曾经拆成两条：一条只验""树渲染/复选框可点""，另一条用 `xfail(strict=True)`
+        锁住""勾选应收敛""——因为当时单个勾选**完全失效**（BUG-03：`data-kp` 是无值属性，
+        `dataset.kp` 为空串导致监听器直接 return）。BUG-03 修复后合并回一条正常用例。
+
+        另注：全选 35 个知识点 **≠** 整个学科，未标注知识点的题不属于任何知识点会被排除
+        （实测 746 → 740），所以这里只验""勾选后题量严格下降、取消后回到全量""。
+        ","1223","test_kp_check_narrows_pool","scripts","Fri Nov 06 01:12:41 CST 2026","passed","Fri Nov 06 01:12:42 CST 2026","TestComposeWorkbench","test_l1_paper","",""
+"","1011","test_shuffle","scripts","Fri Nov 06 01:15:07 CST 2026","passed","Fri Nov 06 01:15:08 CST 2026","TestPracticeInteraction","test_l1_study","",""
+"","375","test_practice_no_subject","scripts","Fri Nov 06 01:16:06 CST 2026","passed","Fri Nov 06 01:16:06 CST 2026","TestPracticeEmpty","test_l1_study","",""
+"","968","test_analytics_charts","scripts","Fri Nov 06 01:00:38 CST 2026","passed","Fri Nov 06 01:00:39 CST 2026","TestAnalytics","test_l1_analytics","",""
+"","342","test_teacher_blocked_on_student_pages","scripts","Fri Nov 06 01:14:43 CST 2026","passed","Fri Nov 06 01:14:43 CST 2026","TestAnonymousAndLeakage","test_l1_security","",""
+"","10415","test_monitor_refresh","scripts","Fri Nov 06 01:11:27 CST 2026","passed","Fri Nov 06 01:11:38 CST 2026","TestExamMonitor","test_l1_exam_manage","",""
+"","1012","test_search_by_keyword","scripts","Fri Nov 06 01:02:45 CST 2026","passed","Fri Nov 06 01:02:46 CST 2026","TestQuestionBankList","test_l1_bank","",""
+"","22088","test_export_xlsx","scripts","Fri Nov 06 01:06:31 CST 2026","passed","Fri Nov 06 01:06:53 CST 2026","TestImportExport","test_l1_bank","",""
+"用例原文是「未勾知识点直接试算被拦」——实测**不拦**（按整个学科试算，合理）。
+
+        改成验证同类的防错设计：还没有试卷时「保存卷头」禁用，
+        避免对不存在的卷发 PATCH。
+        ","433","test_save_title_disabled_before_created","scripts","Fri Nov 06 01:13:06 CST 2026","passed","Fri Nov 06 01:13:06 CST 2026","TestComposeWorkbench","test_l1_paper","",""
+"","10207","test_create_exam","scripts","Fri Nov 06 01:10:09 CST 2026","passed","Fri Nov 06 01:10:20 CST 2026","TestExamCreate","test_l1_exam_manage","",""
+"","1066","test_open_queue_item","scripts","Fri Nov 06 01:12:00 CST 2026","passed","Fri Nov 06 01:12:01 CST 2026","TestWorkbench","test_l1_grading","",""
+"","651","test_import_without_file","scripts","Fri Nov 06 01:06:27 CST 2026","passed","Fri Nov 06 01:06:27 CST 2026","TestImportExport","test_l1_bank","",""
+"","1458","test_confirm_submit_goes_result","scripts","Fri Nov 06 01:08:36 CST 2026","passed","Fri Nov 06 01:08:38 CST 2026","TestExamSubmit","test_l1_exam","",""
+"","1640","test_search_by_keyword","scripts","Fri Nov 06 01:11:01 CST 2026","passed","Fri Nov 06 01:11:02 CST 2026","TestExamList","test_l1_exam_manage","",""
+"","199","test_toggle_password","scripts","Fri Nov 06 01:02:36 CST 2026","passed","Fri Nov 06 01:02:36 CST 2026","TestLoginInteraction","test_l1_auth","",""
+"","9851","test_cancel_submit_keeps_attempt","scripts","Fri Nov 06 01:08:42 CST 2026","passed","Fri Nov 06 01:08:52 CST 2026","TestExamSubmit","test_l1_exam","",""
+"","780","test_student_diagnosis","scripts","Fri Nov 06 01:00:50 CST 2026","passed","Fri Nov 06 01:00:51 CST 2026","TestAnalytics","test_l1_analytics","",""
+"","88","test_missing_exam_shows_error","scripts","Fri Nov 06 01:09:30 CST 2026","passed","Fri Nov 06 01:09:30 CST 2026","TestExamResult","test_l1_exam","",""
+"","8965","test_pager_boundaries","scripts","Fri Nov 06 01:08:01 CST 2026","passed","Fri Nov 06 01:08:10 CST 2026","TestExamAnswering","test_l1_exam","",""
+"","2194","test_only_suspicious_filter","scripts","Fri Nov 06 01:01:15 CST 2026","passed","Fri Nov 06 01:01:17 CST 2026","TestProctoring","test_l1_analytics","",""
+"","1303","test_disable_question","scripts","Fri Nov 06 01:05:42 CST 2026","passed","Fri Nov 06 01:05:44 CST 2026","TestQuestionEditor","test_l1_bank","",""
+"","501","test_all_mode","scripts","Fri Nov 06 01:08:18 CST 2026","passed","Fri Nov 06 01:08:19 CST 2026","TestExamAnswering","test_l1_exam","",""
+"","573","test_tab_switch_open_only","scripts","Fri Nov 06 00:59:03 CST 2026","passed","Fri Nov 06 00:59:04 CST 2026","TestExamLoop","test_l0_smoke","",""
+"","185","test_teacher_cannot_open_my_exams","scripts","Fri Nov 06 01:14:09 CST 2026","passed","Fri Nov 06 01:14:09 CST 2026","TestRoleIsolation","test_l1_security","",""
+"两段都要验：① 服务端 302 带对 next；② 登录后真的回到原页而不是首页。
+
+        只验 ①（很多人只跑到这里）会漏掉""登录成功但 next 被吞掉""的情况，
+        用户体感是""我点了个链接，登完被扔回首页，还得再点一次""。
+        ","735","test_login_returns_to_original_page","scripts","Fri Nov 06 01:14:30 CST 2026","passed","Fri Nov 06 01:14:31 CST 2026","TestAnonymousAndLeakage","test_l1_security","",""
+"","0","test_fill_autosave","scripts","Fri Nov 06 01:09:32 CST 2026","skipped","Fri Nov 06 01:09:32 CST 2026","TestExamSlow","test_l1_exam","",""
+"","1249","test_delete_class","scripts","Fri Nov 06 01:07:46 CST 2026","passed","Fri Nov 06 01:07:47 CST 2026","TestTeacherClassroom","test_l1_class","",""
+"用例原文是""选一场没人交卷的考试看空态""——实测不可行：批改台的考试下拉
+        只列出**有作答记录**的考试（`/grading/exams/` 过滤 `attempts__isnull=False`），
+        没人交卷的考试根本不在列表里。
+
+        改成更有价值的一致性断言：**待批队列的人数必须等于已交卷人数**。
+        这条一旦不成立，就意味着有学生永远不会被批改（漏卷），比空态文案重要得多。
+        ","1132","test_queue_matches_submitted","scripts","Fri Nov 06 01:12:35 CST 2026","passed","Fri Nov 06 01:12:36 CST 2026","TestWorkbench","test_l1_grading","",""
+"教师建好并发布 → 学生「我的考试」能看到同一场。
+
+        用 API 建考试（发布时间窗与面向全体都由造数保证），学生端走真实 UI：
+        这样既不重复 UI-EXM-02 的表单覆盖，又能确认""建完就能考""这条链路。
+        ","1347","test_exam_visible_to_student","scripts","Fri Nov 06 01:10:24 CST 2026","passed","Fri Nov 06 01:10:25 CST 2026","TestExamCreate","test_l1_exam_manage","",""
+"","482","test_done_tab_has_result_link","scripts","Fri Nov 06 01:09:10 CST 2026","passed","Fri Nov 06 01:09:10 CST 2026","TestExamResume","test_l1_exam","",""
+"","1074","test_create_single_choice","scripts","Fri Nov 06 01:05:27 CST 2026","passed","Fri Nov 06 01:05:28 CST 2026","TestQuestionEditor","test_l1_bank","",""
+"用例原文是「退出登录后用新账号登录」。
+
+        固定 profile 下不能同时开两个 Chrome，而且真正的 logout 会销毁共享
+        admin session（L0 踩过连锁失败）。这里用 delete_all_cookies() 达到同样
+        的「以新账号登录」语义，服务端 admin session 不受影响。
+        ","2922","test_create_user_then_login","scripts","Fri Nov 06 00:59:55 CST 2026","passed","Fri Nov 06 00:59:57 CST 2026","TestUserCreate","test_l1_admin","",""
+"","1856","test_clone_paper","scripts","Fri Nov 06 01:13:44 CST 2026","passed","Fri Nov 06 01:13:46 CST 2026","TestPaperEditor","test_l1_paper","",""
+"","9095","test_add_student","scripts","Fri Nov 06 01:07:27 CST 2026","passed","Fri Nov 06 01:07:36 CST 2026","TestTeacherClassroom","test_l1_class","",""
+"","1649","test_password_mismatch","scripts","Fri Nov 06 01:02:19 CST 2026","passed","Fri Nov 06 01:02:21 CST 2026","TestRegister","test_l1_auth","",""
+"","385","test_start_exam_renders_question","scripts","Fri Nov 06 00:59:11 CST 2026","passed","Fri Nov 06 00:59:12 CST 2026","TestExamLoop","test_l0_smoke","",""
+"","196","test_student_nav_scope","scripts","Fri Nov 06 01:14:21 CST 2026","passed","Fri Nov 06 01:14:21 CST 2026","TestRoleIsolation","test_l1_security","",""
+"","1016","test_search_no_result","scripts","Fri Nov 06 01:05:22 CST 2026","passed","Fri Nov 06 01:05:23 CST 2026","TestQuestionBankList","test_l1_bank","",""
+"","9570","test_submit_modal_summary","scripts","Fri Nov 06 01:08:22 CST 2026","passed","Fri Nov 06 01:08:32 CST 2026","TestExamSubmit","test_l1_exam","",""
+"","394","test_question_bank_rows","scripts","Fri Nov 06 00:59:29 CST 2026","passed","Fri Nov 06 00:59:29 CST 2026","TestQuestionBank","test_l0_smoke","",""
+"","0","test_short_answer_persisted","scripts","Fri Nov 06 01:09:32 CST 2026","skipped","Fri Nov 06 01:09:32 CST 2026","TestExamSlow","test_l1_exam","",""
+"","2230","test_register_success","scripts","Fri Nov 06 01:01:56 CST 2026","passed","Fri Nov 06 01:01:58 CST 2026","TestRegister","test_l1_auth","",""
+"","877","test_analytics_charts","scripts","Fri Nov 06 01:15:22 CST 2026","passed","Fri Nov 06 01:15:23 CST 2026","TestAnalytics","test_l1_study","",""
+"","786","test_unknown_account_same_message","scripts","Fri Nov 06 01:01:41 CST 2026","passed","Fri Nov 06 01:01:42 CST 2026","TestLoginWays","test_l1_auth","",""
+"","662","test_edit_user","scripts","Fri Nov 06 01:00:14 CST 2026","passed","Fri Nov 06 01:00:14 CST 2026","TestUserGovernance","test_l1_admin","",""
+"","1535","test_create_knowledge_requires_name","scripts","Fri Nov 06 01:06:06 CST 2026","passed","Fri Nov 06 01:06:08 CST 2026","TestKnowledgePoint","test_l1_bank","",""
+"","705","test_view_answer_after_submit","scripts","Fri Nov 06 01:14:55 CST 2026","passed","Fri Nov 06 01:14:55 CST 2026","TestPracticeInteraction","test_l1_study","",""
+"","0","test_refresh_keeps_answer","scripts","Fri Nov 06 01:09:32 CST 2026","skipped","Fri Nov 06 01:09:32 CST 2026","TestExamSlow","test_l1_exam","",""
+"","2043","test_reset_password","scripts","Fri Nov 06 01:00:30 CST 2026","passed","Fri Nov 06 01:00:32 CST 2026","TestUserGovernance","test_l1_admin","",""
+"","279","test_add_option","scripts","Fri Nov 06 01:05:52 CST 2026","passed","Fri Nov 06 01:05:52 CST 2026","TestQuestionEditor","test_l1_bank","",""
+"","1268","test_publish_paper","scripts","Fri Nov 06 01:13:37 CST 2026","passed","Fri Nov 06 01:13:39 CST 2026","TestPaperEditor","test_l1_paper","",""
+"","759","test_weak_points_block","scripts","Fri Nov 06 01:15:27 CST 2026","passed","Fri Nov 06 01:15:28 CST 2026","TestAnalytics","test_l1_study","",""
+"","1528","test_save_title","scripts","Fri Nov 06 01:13:11 CST 2026","passed","Fri Nov 06 01:13:12 CST 2026","TestPaperEditor","test_l1_paper","",""
+"","2392","test_publish_exam","scripts","Fri Nov 06 01:10:44 CST 2026","passed","Fri Nov 06 01:10:47 CST 2026","TestExamEdit","test_l1_exam_manage","",""
+"","473","test_result_badge_counts","scripts","Fri Nov 06 01:09:22 CST 2026","passed","Fri Nov 06 01:09:22 CST 2026","TestExamResult","test_l1_exam","",""
+"","1712","test_proctor_kpi_and_list","scripts","Fri Nov 06 01:01:02 CST 2026","passed","Fri Nov 06 01:01:04 CST 2026","TestProctoring","test_l1_analytics","",""
+"","734","test_admin_login_redirects_manage","scripts","Fri Nov 06 00:58:49 CST 2026","passed","Fri Nov 06 00:58:49 CST 2026","TestAuth","test_l0_smoke","",""
+"","418","test_delegated_banner","scripts","Fri Nov 06 01:00:26 CST 2026","passed","Fri Nov 06 01:00:26 CST 2026","TestUserGovernance","test_l1_admin","",""
+"","445","test_forbidden_pages_do_not_leak","scripts","Fri Nov 06 01:14:39 CST 2026","passed","Fri Nov 06 01:14:39 CST 2026","TestAnonymousAndLeakage","test_l1_security","",""
+"按状态筛选：核对「UI 行数 == 接口 count（封顶 10）」。
+
+        **不能断言徽章文案**：筛选用的是**存储状态** `status`，而徽章显示的是
+        `computed_status`——时间已过的 published 考试会显示「已结束」。
+        所以""筛已发布却看到已结束""不是筛选失效（已登记 OBS-10），
+        真正该验的是""前端确实把 status 传给了后端、后端确实按它过滤""。
+        ","1288","test_filter_by_status","scripts","Fri Nov 06 01:10:55 CST 2026","passed","Fri Nov 06 01:10:57 CST 2026","TestExamList","test_l1_exam_manage","",""
+"","478","test_logout_invalidates_session","scripts","Fri Nov 06 00:58:54 CST 2026","passed","Fri Nov 06 00:58:54 CST 2026","TestAuth","test_l0_smoke","",""
+"","4099","test_ai_reason","scripts","Fri Nov 06 01:15:14 CST 2026","passed","Fri Nov 06 01:15:18 CST 2026","TestPracticeInteraction","test_l1_study","",""
+"","389","test_scoreboard_search","scripts","Fri Nov 06 01:11:51 CST 2026","passed","Fri Nov 06 01:11:51 CST 2026","TestScoreboard","test_l1_grading","",""
+"","1788","test_reset_filters","scripts","Fri Nov 06 01:02:50 CST 2026","passed","Fri Nov 06 01:02:52 CST 2026","TestQuestionBankList","test_l1_bank","",""
+"用例原预期「节点显示停用态」，实测是「停用后节点从树里消失」。
+
+        `/knowledge-points/tree/` 只返回启用节点（OBS-09）。所以正确口径是：
+        树里不再显示（停用生效），但记录仍在且 is_active=False（停用 ≠ 删除）。
+        ","5039","test_disable_knowledge","scripts","Fri Nov 06 01:06:12 CST 2026","passed","Fri Nov 06 01:06:17 CST 2026","TestKnowledgePoint","test_l1_bank","",""
+"","792","test_viewport_1280","scripts","Fri Nov 06 01:15:36 CST 2026","passed","Fri Nov 06 01:15:37 CST 2026","TestAnalytics","test_l1_study","",""
+"","1647","test_rules_catalog","scripts","Fri Nov 06 01:01:21 CST 2026","passed","Fri Nov 06 01:01:23 CST 2026","TestProctoring","test_l1_analytics","",""
+"","1980","test_missing_grade","scripts","Fri Nov 06 01:00:07 CST 2026","passed","Fri Nov 06 01:00:09 CST 2026","TestUserCreate","test_l1_admin","",""
+"","141","test_bug02_error_text_readable","scripts","Fri Nov 06 01:16:18 CST 2026","passed","Fri Nov 06 01:16:18 CST 2026","TestBug02Guard","test_regressions","",""
+"","1088","test_nav_to_analytics","scripts","Fri Nov 06 01:15:32 CST 2026","passed","Fri Nov 06 01:15:33 CST 2026","TestAnalytics","test_l1_study","",""
+"","1520","test_create_empty_name","scripts","Fri Nov 06 01:07:40 CST 2026","passed","Fri Nov 06 01:07:42 CST 2026","TestTeacherClassroom","test_l1_class","",""
+"","780","test_login_with_email","scripts","Fri Nov 06 01:01:27 CST 2026","passed","Fri Nov 06 01:01:28 CST 2026","TestLoginWays","test_l1_auth","",""
+"","451","test_student_cannot_open_monitor","scripts","Fri Nov 06 01:14:25 CST 2026","passed","Fri Nov 06 01:14:26 CST 2026","TestRoleIsolation","test_l1_security","",""
+"粘贴是**静默记录**，不弹 `#cheat-banner`（那个只给「全屏退出」和「切屏超限」用）。
+
+        所以证据要看右上角的 `#cheat-stat`：上报成功后它会变成「切屏 0 次 · 粘贴 1 次」。
+        页面不拦截粘贴、也不阻断输入——记录与作答互不影响。
+        ","30654","test_paste_reported","scripts","Fri Nov 06 01:09:34 CST 2026","passed","Fri Nov 06 01:10:05 CST 2026","TestExamSlow","test_l1_exam","",""
+"","1126","test_wrong_password","scripts","Fri Nov 06 01:01:36 CST 2026","passed","Fri Nov 06 01:01:37 CST 2026","TestLoginWays","test_l1_auth","",""
+"","907","test_flag_question","scripts","Fri Nov 06 01:07:56 CST 2026","passed","Fri Nov 06 01:07:57 CST 2026","TestExamAnswering","test_l1_exam","",""
+"","805","test_login_with_student_no","scripts","Fri Nov 06 01:01:31 CST 2026","passed","Fri Nov 06 01:01:32 CST 2026","TestLoginWays","test_l1_auth","",""
+"","370","test_evidence_chain","scripts","Fri Nov 06 01:01:09 CST 2026","passed","Fri Nov 06 01:01:10 CST 2026","TestProctoring","test_l1_analytics","",""
+"","420","test_edit_page_prefilled","scripts","Fri Nov 06 01:05:31 CST 2026","passed","Fri Nov 06 01:05:32 CST 2026","TestQuestionEditor","test_l1_bank","",""
+"","1531","test_grade_objective","scripts","Fri Nov 06 01:12:06 CST 2026","passed","Fri Nov 06 01:12:07 CST 2026","TestWorkbench","test_l1_grading","",""
+"","970","test_filter_by_status","scripts","Fri Nov 06 01:13:50 CST 2026","passed","Fri Nov 06 01:13:51 CST 2026","TestPaperList","test_l1_paper","",""
+"实测修订：错题本**没有展开/收起入口**，参考答案与解析在 `.ref-box`
+        里始终可见（卡片内一个 button 都没有）。原文的「点展开」不可达，
+        断言改为「默认可见 + 内容非空 + 我的作答区存在」。
+        ","3291","test_reference_and_analysis","scripts","Fri Nov 06 01:15:53 CST 2026","passed","Fri Nov 06 01:15:56 CST 2026","TestWrongBook","test_l1_study","",""
+"","1238","test_register_empty","scripts","Fri Nov 06 01:01:50 CST 2026","passed","Fri Nov 06 01:01:52 CST 2026","TestRegister","test_l1_auth","",""
+"","430","test_user_list_filter","scripts","Fri Nov 06 00:59:50 CST 2026","passed","Fri Nov 06 00:59:51 CST 2026","TestUserList","test_l1_admin","",""
+"","843","test_student_login_lands_home","scripts","Fri Nov 06 00:58:39 CST 2026","passed","Fri Nov 06 00:58:40 CST 2026","TestAuth","test_l0_smoke","",""
+"","645","test_practice_page_loaded","scripts","Fri Nov 06 00:59:20 CST 2026","passed","Fri Nov 06 00:59:20 CST 2026","TestStudentPages","test_l0_smoke","",""
+"","1036","test_bug01_delete_referenced_draft_paper","scripts","Fri Nov 06 01:16:09 CST 2026","passed","Fri Nov 06 01:16:10 CST 2026","TestClosedDefects","test_regressions","",""
+"","1575","test_weak_password","scripts","Fri Nov 06 01:02:25 CST 2026","passed","Fri Nov 06 01:02:26 CST 2026","TestRegister","test_l1_auth","",""
+"","374","test_student_manage_users_redirect","scripts","Fri Nov 06 01:14:13 CST 2026","passed","Fri Nov 06 01:14:13 CST 2026","TestRoleIsolation","test_l1_security","",""
+"","409","test_paper_list","scripts","Fri Nov 06 00:59:33 CST 2026","passed","Fri Nov 06 00:59:33 CST 2026","TestPaperList","test_l0_smoke","",""
+"","1347","test_download_import_template","scripts","Fri Nov 06 01:06:58 CST 2026","passed","Fri Nov 06 01:06:59 CST 2026","TestImportExport","test_l1_bank","",""
+"","1956","test_edit_subjective_score","scripts","Fri Nov 06 01:12:12 CST 2026","passed","Fri Nov 06 01:12:14 CST 2026","TestWorkbench","test_l1_grading","",""
+"","11189","test_edit_exam_title","scripts","Fri Nov 06 01:10:29 CST 2026","passed","Fri Nov 06 01:10:40 CST 2026","TestExamEdit","test_l1_exam_manage","",""
+"","1115","test_refresh_keeps_order","scripts","Fri Nov 06 01:08:56 CST 2026","passed","Fri Nov 06 01:08:57 CST 2026","TestExamResume","test_l1_exam","",""
+"「记住我」的真实差异在 **sessionid 的过期时间**：
+        勾选 → 持久 cookie（带 expiry，默认 2 周）；不勾选 → 会话 cookie（无 expiry，
+        关浏览器即失效）。只验「刷新后还登录」是验不出来的——两种都还登录着。
+        ","1831","test_remember_me","scripts","Fri Nov 06 01:02:30 CST 2026","passed","Fri Nov 06 01:02:32 CST 2026","TestLoginInteraction","test_l1_auth","",""
+"","1604","test_duplicate_email","scripts","Fri Nov 06 01:02:14 CST 2026","passed","Fri Nov 06 01:02:15 CST 2026","TestRegister","test_l1_auth","",""
+"","677","test_create_exam_requires_paper","scripts","Fri Nov 06 01:10:51 CST 2026","passed","Fri Nov 06 01:10:51 CST 2026","TestExamEdit","test_l1_exam_manage","",""
+"","901","test_own_class_detail","scripts","Fri Nov 06 01:07:03 CST 2026","passed","Fri Nov 06 01:07:04 CST 2026","TestStudentClassroom","test_l1_class","",""
+"","2024","test_create_root_knowledge","scripts","Fri Nov 06 01:06:00 CST 2026","passed","Fri Nov 06 01:06:02 CST 2026","TestKnowledgePoint","test_l1_bank","",""
+"","7788","test_filter_by_subject","scripts","Fri Nov 06 01:15:41 CST 2026","passed","Fri Nov 06 01:15:49 CST 2026","TestWrongBook","test_l1_study","",""
+"","455","test_answer_single_choice_updates_progress","scripts","Fri Nov 06 00:59:15 CST 2026","passed","Fri Nov 06 00:59:16 CST 2026","TestExamLoop","test_l0_smoke","",""
+"用例原预期「弹窗文案含该用户名」——实测 `#toggleModalText` 是固定文案，
+        不含目标账号（已登记 OBS-12，建议开发把目标用户名写进确认弹窗）。
+        目标身份改由行按钮的 `data-username` 精确定位，不会点错人。
+        ","2768","test_disable_user","scripts","Fri Nov 06 01:00:19 CST 2026","passed","Fri Nov 06 01:00:22 CST 2026","TestUserGovernance","test_l1_admin","",""
+"","2627","test_random_compose","scripts","Fri Nov 06 01:12:53 CST 2026","passed","Fri Nov 06 01:12:56 CST 2026","TestComposeWorkbench","test_l1_paper","",""
+"","450","test_answer_sheet_switch","scripts","Fri Nov 06 01:08:14 CST 2026","passed","Fri Nov 06 01:08:14 CST 2026","TestExamAnswering","test_l1_exam","",""
+"","2049","test_import_dry_run","scripts","Fri Nov 06 01:06:21 CST 2026","passed","Fri Nov 06 01:06:23 CST 2026","TestImportExport","test_l1_bank","",""
+"","9533","test_create_class","scripts","Fri Nov 06 01:07:12 CST 2026","passed","Fri Nov 06 01:07:22 CST 2026","TestTeacherClassroom","test_l1_class","",""
+"","185","test_student_cannot_open_question_bank","scripts","Fri Nov 06 00:59:46 CST 2026","passed","Fri Nov 06 00:59:46 CST 2026","TestGuard","test_l0_smoke","",""
+"","1986","test_preview_panel_renders","scripts","Fri Nov 06 01:13:00 CST 2026","passed","Fri Nov 06 01:13:02 CST 2026","TestComposeWorkbench","test_l1_paper","",""
+"用例原文是「选一场无人作答的考试看空态」——实测该场景在页面上不可达：
+
+        - `/analytics/exams/` 只列**有人交卷**的考试，无人作答的考试不在下拉里，
+          `?exam_id=` 也只会 fallback 到 rows[0]；
+        - `#class-select` 里 52 个班级对当前教师调用 report 接口**全部 404**
+          （教师没有可管理班级，见 OBS-04），选了只会显示错误，不是空态。
+
+        改成验证同类且更有价值的降级：**有交卷但尚未出分**时，看板用
+        「暂无 / —」给出可读空态与占位、不残留加载中、零 JS 错误。
+        ","868","test_analytics_empty_state","scripts","Fri Nov 06 01:00:56 CST 2026","passed","Fri Nov 06 01:00:57 CST 2026","TestAnalytics","test_l1_analytics","",""
+"","351","test_type_switch_changes_form","scripts","Fri Nov 06 01:05:48 CST 2026","passed","Fri Nov 06 01:05:48 CST 2026","TestQuestionEditor","test_l1_bank","",""
+"","796","test_search_by_keyword","scripts","Fri Nov 06 01:13:55 CST 2026","passed","Fri Nov 06 01:13:56 CST 2026","TestPaperList","test_l1_paper","",""

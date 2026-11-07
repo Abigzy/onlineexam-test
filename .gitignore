@@ -47,10 +47,15 @@ logs/
 *.log
 
 # ---------------- 测试执行产物（可重新生成） ----------------
-# pytest-html / Allure / Locust 的 report 目录、运行期下载样例
-report/
+# 运行期下载样例、执行截图一律不入库
 downloads/
 screenshots/
+
+# 报告产物：只保留「最终版」用于简历展示，中间轮次 / 对照组 / 原始 CSV 不入库
+**/report/*
+!**/report/report.html
+!**/report/allure-report/
+!**/report/opt_*.html
 
 # ---------------- 本地工具与二进制（体积大、平台相关，请自行下载） ----------------
 # chromedriver、Allure CLI、浏览器 profile

@@ -1,0 +1,7 @@
+INFO     data:data_factory.py:485 考试 1971 有作答记录，已归档（业务规则不允许删除）
+INFO     data:data_factory.py:475 已删除考试 1972
+INFO     data:data_factory.py:485 考试 1973 有作答记录，已归档（业务规则不允许删除）
+INFO     data:data_factory.py:485 考试 1974 有作答记录，已归档（业务规则不允许删除）
+INFO     data:data_factory.py:527 试卷 826 保留为归档态（审计要求）
+INFO     data:data_factory.py:503 已删除试卷 834
+INFO     data:data_factory.py:503 已删除试卷 827

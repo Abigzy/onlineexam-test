@@ -17,7 +17,7 @@
 |---|---|---|---|---|
 | 功能测试 | `onlineexam-fun-test/` | 手工 + 用例基线（xlsx/xmind/md） | **246 条** | 246 通过 / 0 失败 / 0 阻塞，7 缺陷全修复 |
 | 接口自动化 | `onlineexam-api-autotest/` | pytest + requests（IHRM 约定） | **229 条** | 229 passed / 0 failed / 0 xfail（49.2s），3 缺陷全关闭 |
-| UI 自动化 | `onlineexam-ui-autotest/` | pytest + Selenium 4.38 + PO + Allure | **150 条**（P0 28 / P1 74 / P2 48） | 151 passed / 3 skipped / 0 failed（17m51s），4 缺陷全关闭 |
+| UI 自动化 | `onlineexam-ui-autotest/` | pytest + Selenium 4.38 + PO + Allure | **150 条**（P0 28 / P1 74 / P2 48） | 154 项（150 用例 + 4 缺陷守卫）→ 151 passed / 3 skipped / 0 failed（17m51s），4 缺陷全关闭 |
 | 性能测试 | `onlineexam-performance-testing/` | Locust 2.47.0 | 50 并发验收 + 三组环境对照 | 连接复用后 45.2 RPS / P95 0.84s，四场景达标 |
 
 > 四层测试的详细过程文档、用例基线、执行记录、缺陷单都在各自目录的 `docs/` 与报告文件中，见下文「各模块说明」。
@@ -26,8 +26,9 @@
 
 ## 目录结构
 
-> 只列**仓库里实际存在**的内容。运行期缓存、日志、报告产物、真实 token、
-> chromedriver、Allure CLI 等已被 `.gitignore` 排除，不在仓库中。
+> 只列**仓库里实际存在**的内容。运行期缓存、日志、真实 token、chromedriver、Allure CLI、
+> 性能压测的中间轮次/对照组/原始 CSV 等已被 `.gitignore` 排除，不在仓库中；
+> 各层**最终版报告**（接口 pytest-html、UI Allure、性能 opt 系列 HTML）已入库，见下文「报告产物入口」。
 
 ```
 onlineexam-test/
@@ -37,9 +38,7 @@ onlineexam-test/
 │   ├── OnlineExam-功能测试用例.xlsx      246 条用例基线（v2.0）
 │   ├── 测试用例.md                       用例明细
 │   ├── 需求分析与测试点.xmind            测试点导图
-│   ├── 功能测试报告.md                   上线评估版报告（结论：可上线）
-│   ├── 接口测试报告.md                   模块 11 历史基线（接口契约测试）
-│   └── 性能测试报告.md                   模块 11 历史基线（三场景并发）
+│   └── 功能测试报告.md                   上线评估版报告（结论：可上线）
 │
 ├── onlineexam-api-autotest/           接口自动化测试
 │   ├── docs/                            8 篇过程文档 + 思维导图 + assets（openapi.yaml）
@@ -48,7 +47,8 @@ onlineexam-test/
 │       ├── common/                      断言器 / 客户端 / 认证 / 数据库 / 日志
 │       ├── encap_api/                   按模块封装的接口层（admin/auth/content/exam/grading/insight）
 │       ├── scripts/                     20 个测试脚本（L0 冒烟 → B1~B12 分模块）
-│       └── data/                        账号池 / 造数 fixtures / 登录数据
+│       ├── data/                        账号池 / 造数 fixtures / 登录数据
+│       └── report/report.html           全量 pytest-html 报告（已入库）
 │
 ├── onlineexam-ui-autotest/            UI 自动化测试
 │   ├── docs/                            7 篇过程文档 + 缺陷管理 + 思维导图 + assets
@@ -57,7 +57,8 @@ onlineexam-test/
 │   │   ├── common/                      驱动工厂 / PO 基类 / 组件 / 数据工厂 / 报告构建
 │   │   ├── pages/                       35 个页面的 Page Object（admin/auth/analytics/student/teacher/security）
 │   │   ├── scripts/                     13 个测试脚本（L0 冒烟 → L1 分模块 → 回归）
-│   │   └── data/                        导入样例 xlsx 等测试数据
+│   │   ├── data/                        导入样例 xlsx 等测试数据
+│   │   └── report/allure-report/        Allure 全量报告（已入库）
 │   └── tools/                           环境自检 / 定位器探测 / 缺陷复现验证脚本
 │
 └── onlineexam-performance-testing/    性能测试
@@ -67,7 +68,7 @@ onlineexam-test/
         ├── perf_settings.py             压测专用 Django 配置（DEBUG=False、连接复用）
         ├── scripts/                     造数 / 起服务 / 压测 / 汇总脚本
         ├── requirements.txt / .run/     依赖清单 + PyCharm 运行配置说明
-        └── report/                      原始压测数据（未入库，可重新生成）
+        └── report/opt_*.html            最终版压测报告 9 份（连接复用优化后，已入库）
 ```
 
 ---
@@ -88,14 +89,16 @@ onlineexam-test/
 - **结论**：全量 **229 passed / 0 failed / 0 xfail**（约 49.2s，连跑两轮一致）；3 个缺陷（2 严重 + 1 一般）全部关闭。
 - **运行**：先起被测服务（`python manage.py runserver 127.0.0.1:8777`），再 `cd onlineexam_api_autotest && pytest`。
   详见 `docs/05-环境搭建.md` 与 `docs/README.md`。
+- **报告**：全量报告 `onlineexam_api_autotest/report/report.html`（pytest-html，已入库）。
 
 ### 3. UI 自动化 `onlineexam-ui-autotest/`
 
 - **技术栈**：pytest + Selenium 4.38 + Chrome 156（headless）+ **PO 模式** + **Allure 报告**。
-- **规模**：150 条用例（P0 28 / P1 74 / P2 48；L0 15 / L1 87 / L2 48），35 页 / 307 个定位器。
-- **结论**：全量 **151 passed / 3 skipped / 0 failed**（约 17m51s）；4 个缺陷全部关闭。
-- **运行**：自备 chromedriver（见 `.gitignore` 说明），`cd onlineexam_ui_autotest && pytest`；
-  Allure 报告入口 `report/allure-report/uireport.html`（运行产物，本地生成）。
+- **规模**：150 条用例（P0 28 / P1 74 / P2 48；L0 15 / L1 87 / L2 48），另加 **4 条缺陷守卫用例**，共 35 页 / 307 个定位器。
+- **结论**：全量收集 **154 项**（150 用例 + 4 守卫）→ **151 passed / 3 skipped / 0 failed**（约 17m51s）；
+  3 条 skipped 为「30s 自动暂存」用例（主动排除、已单独验证通过），非跑不过；4 个缺陷全部关闭。
+- **运行**：自备 chromedriver（见 `.gitignore` 说明），`cd onlineexam_ui_autotest && pytest`。
+- **报告**：Allure 全量报告已入库，本地打开 `onlineexam_ui_autotest/report/allure-report/uireport.html`。
 
 ### 4. 性能测试 `onlineexam-performance-testing/`
 
@@ -105,6 +108,23 @@ onlineexam-test/
   交卷、开考读峰、判分、混合四场景全部达标。唯一未达标档「50 人同一秒点交卷」
   已定位为线程池排队，加线程 + 前端错峰可解。
 - **运行**：`cd onlineexam_performance_testing`，按 `.run/README.md` 或 `docs/02-测试计划与环境搭建.md` 的 6 个场景执行。
+- **报告**：最终版压测报告 9 份已入库，本地打开 `report/opt_*.html`（如 `opt_submit50.html` 交卷验收线、`opt_mix50.html` 混合场景）。
+
+---
+
+## 报告产物入口
+
+各层的**最终版可视化报告**已入库（GitHub 网页上 HTML 不渲染，`clone` 后本地双击打开即可看）：
+
+| 层次 | 报告文件 | 内容 |
+|---|---|---|
+| 接口自动化 | `onlineexam-api-autotest/onlineexam_api_autotest/report/report.html` | 229 条用例的 pytest-html 全量报告 |
+| UI 自动化 | `onlineexam-ui-autotest/onlineexam_ui_autotest/report/allure-report/uireport.html` | 154 项用例的 Allure 报告（含步骤/截图/日志） |
+| 性能测试 | `onlineexam-performance-testing/onlineexam_performance_testing/report/opt_*.html` | 连接复用优化后 9 个场景的 Locust 报告（RPS/P95 曲线） |
+
+> **打开方式**：Locust 报告为自包含 HTML（内嵌 ECharts，双击即可打开）；Allure 报告是「入口 + data 目录」结构，
+> 需起静态服务器后查看：`cd report/allure-report && python -m http.server 8000` 再访问 `http://127.0.0.1:8000/uireport.html`（或用 `allure open`）。
+> 性能中间轮次、对照组、原始 CSV 未入库，需要完整数据可本地重跑（命令见各模块 `docs/`）。
 
 ---
 
