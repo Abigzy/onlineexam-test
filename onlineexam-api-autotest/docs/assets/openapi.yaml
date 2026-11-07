@@ -1,0 +1,7548 @@
+openapi: 3.0.3
+info:
+  title: AI 在线考试与学情分析系统 API
+  version: 1.0.0
+  description: |-
+    基于 Django + DRF 的在线考试平台接口文档。
+
+    认证方式：先调用 `/api/v1/auth/login/` 获取 `access`，再在右上角 Authorize 中填入 `Bearer <access>`。
+paths:
+  /api/health/:
+    get:
+      operationId: api_health_retrieve
+      description: |-
+        GET /api/health/ —— 探活接口。
+
+        部署后给负载均衡 / 监控系统用；也方便确认数据库连接是否正常。
+      summary: 健康检查
+      tags:
+      - 系统
+      security:
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/ai/chat/:
+    post:
+      operationId: api_v1_ai_chat_create
+      description: 大模型能力的统一入口。
+      summary: 在线调试大模型
+      tags:
+      - AI 能力
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIChatRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AIChatRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AIChatRequestRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIChatRequest'
+          description: ''
+  /api/v1/ai/logs/:
+    get:
+      operationId: api_v1_ai_logs_retrieve
+      description: 大模型能力的统一入口。
+      summary: 最近调用记录
+      tags:
+      - AI 能力
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIChatRequest'
+          description: ''
+  /api/v1/ai/providers/:
+    get:
+      operationId: api_v1_ai_providers_retrieve
+      description: 大模型能力的统一入口。
+      summary: 平台清单与配置状态
+      tags:
+      - AI 能力
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIChatRequest'
+          description: ''
+  /api/v1/ai/test-connection/:
+    post:
+      operationId: api_v1_ai_test_connection_create
+      description: 大模型能力的统一入口。
+      summary: 测试平台连通性
+      tags:
+      - AI 能力
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIChatRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AIChatRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AIChatRequestRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIChatRequest'
+          description: ''
+  /api/v1/ai/usage/:
+    get:
+      operationId: api_v1_ai_usage_retrieve
+      description: 大模型能力的统一入口。
+      summary: 调用用量统计
+      tags:
+      - AI 能力
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIChatRequest'
+          description: ''
+  /api/v1/analytics/exams/:
+    get:
+      operationId: api_v1_analytics_exams_retrieve
+      description: 可分析的考试列表（有作答记录的考试）。
+      summary: 可分析的考试列表
+      tags:
+      - 学情分析 · 教师
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/analytics/exams/{exam_id}/questions/:
+    get:
+      operationId: api_v1_analytics_exams_questions_retrieve
+      description: 逐题得分率与区分度。
+      summary: 逐题得分率与区分度
+      parameters:
+      - in: query
+        name: classroom_id
+        schema:
+          type: integer
+        description: 按班级过滤（可选）
+      - in: path
+        name: exam_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - 学情分析 · 教师
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/analytics/exams/{exam_id}/report/:
+    get:
+      operationId: api_v1_analytics_exams_report_retrieve
+      description: 班级学情总览：分数分布、参与度、行为概览、薄弱知识点、排名预览。
+      summary: 班级学情总览
+      parameters:
+      - in: query
+        name: classroom_id
+        schema:
+          type: integer
+        description: 按班级过滤（可选）
+      - in: path
+        name: exam_id
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: include_rows
+        schema:
+          type: boolean
+        description: 是否附带逐人明细
+      tags:
+      - 学情分析 · 教师
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/analytics/students/{student_id}/diagnosis/:
+    post:
+      operationId: api_v1_analytics_students_diagnosis_create
+      description: 生成 / 刷新 AI 学情诊断（命中缓存则不重复调用大模型）。
+      summary: 生成 AI 学情诊断
+      parameters:
+      - in: path
+        name: student_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - 学情分析
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DiagnosisRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DiagnosisRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DiagnosisRequestRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/analytics/students/{student_id}/mastery/:
+    get:
+      operationId: api_v1_analytics_students_mastery_retrieve
+      description: 知识点掌握度矩阵与薄弱点。
+      summary: 知识点掌握度（含雷达图数据与薄弱点）
+      parameters:
+      - in: path
+        name: student_id
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: subject
+        schema:
+          type: string
+        description: 按学科过滤
+      tags:
+      - 学情分析
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/analytics/students/{student_id}/report/:
+    get:
+      operationId: api_v1_analytics_students_report_retrieve
+      description: |-
+        个人学情总览（页面一次拿全）。
+
+        **不会自动调大模型**——只返回已有的诊断缓存（若有）。
+        要生成诊断请调 ``POST .../diagnosis/``。
+      summary: 个人学情总览
+      parameters:
+      - in: query
+        name: limit
+        schema:
+          type: integer
+        description: 趋势取最近多少次作答
+      - in: path
+        name: student_id
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: subject
+        schema:
+          type: string
+        description: 按学科过滤
+      tags:
+      - 学情分析
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/analytics/students/{student_id}/trend/:
+    get:
+      operationId: api_v1_analytics_students_trend_retrieve
+      description: 成绩趋势与线性回归预测。
+      summary: 成绩趋势（含回归预测）
+      parameters:
+      - in: query
+        name: limit
+        schema:
+          type: integer
+        description: 取最近多少次作答
+      - in: path
+        name: student_id
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: subject
+        schema:
+          type: string
+        description: 按学科过滤
+      tags:
+      - 学情分析
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/attempts/:
+    get:
+      operationId: api_v1_attempts_list
+      description: 作答记录：学生自己的作答全流程 + 教师的查阅。
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: 用于排序结果的字段。
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: 分页结果集中的页码。
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: 每页返回的结果数量。
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: 搜索关键词。
+        schema:
+          type: string
+      tags:
+      - 考试 · 作答
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedExamAttemptStudentList'
+          description: ''
+  /api/v1/attempts/{id}/:
+    get:
+      operationId: api_v1_attempts_retrieve
+      description: 作答记录：学生自己的作答全流程 + 教师的查阅。
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - 考试 · 作答
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamAttemptStudent'
+          description: ''
+  /api/v1/attempts/{id}/answers/:
+    get:
+      operationId: api_v1_attempts_answers_retrieve
+      description: 作答记录：学生自己的作答全流程 + 教师的查阅。
+      summary: 逐题作答明细（GET 查看 / POST 批量暂存）
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - 考试 · 作答
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamAttempt'
+          description: ''
+    post:
+      operationId: api_v1_attempts_answers_create
+      description: 作答记录：学生自己的作答全流程 + 教师的查阅。
+      summary: 逐题作答明细（GET 查看 / POST 批量暂存）
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - 考试 · 作答
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExamAttemptRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExamAttemptRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExamAttemptRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamAttempt'
+          description: ''
+  /api/v1/attempts/{id}/behavior/:
+    post:
+      operationId: api_v1_attempts_behavior_create
+      description: 作答记录：学生自己的作答全流程 + 教师的查阅。
+      summary: 行为上报（切屏 / 粘贴 / 退出全屏）
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - 考试 · 作答
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BehaviorReportRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BehaviorReportRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BehaviorReportRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamAttempt'
+          description: ''
+  /api/v1/attempts/{id}/heartbeat/:
+    post:
+      operationId: api_v1_attempts_heartbeat_create
+      description: 作答记录：学生自己的作答全流程 + 教师的查阅。
+      summary: 心跳（返回服务端权威剩余时间）
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - 考试 · 作答
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HeartbeatRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HeartbeatRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HeartbeatRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamAttempt'
+          description: ''
+  /api/v1/attempts/{id}/paper/:
+    get:
+      operationId: api_v1_attempts_paper_retrieve
+      description: 作答记录：学生自己的作答全流程 + 教师的查阅。
+      summary: 获取卷面与已存答案（断网续考 / 刷新恢复）
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - 考试 · 作答
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamAttempt'
+          description: ''
+  /api/v1/attempts/{id}/result/:
+    get:
+      operationId: api_v1_attempts_result_retrieve
+      description: 作答记录：学生自己的作答全流程 + 教师的查阅。
+      summary: 查看结果
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - 考试 · 作答
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamAttemptStudent'
+          description: ''
+  /api/v1/attempts/{id}/save/:
+    post:
+      operationId: api_v1_attempts_save_create
+      description: 作答记录：学生自己的作答全流程 + 教师的查阅。
+      summary: 单题暂存
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - 考试 · 作答
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveAnswerRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SaveAnswerRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SaveAnswerRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamAttempt'
+          description: ''
+  /api/v1/attempts/{id}/submit/:
+    post:
+      operationId: api_v1_attempts_submit_create
+      description: 作答记录：学生自己的作答全流程 + 教师的查阅。
+      summary: 交卷
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - 考试 · 作答
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubmitRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubmitRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamAttempt'
+          description: ''
+  /api/v1/auth/change-password/:
+    post:
+      operationId: api_v1_auth_change_password_create
+      description: POST /api/v1/auth/change-password/
+      summary: 修改密码
+      tags:
+      - 认证
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          description: No response body
+  /api/v1/auth/login/:
+    post:
+      operationId: api_v1_auth_login_create
+      description: POST /api/v1/auth/login/  → {access, refresh, user}
+      summary: 登录（用户名 / 邮箱 / 学号）
+      tags:
+      - 认证
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPairRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPairRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPairRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomTokenObtainPair'
+          description: ''
+  /api/v1/auth/logout/:
+    post:
+      operationId: api_v1_auth_logout_create
+      description: 'POST /api/v1/auth/logout/  body: {refresh}'
+      summary: 登出（refresh token 拉黑）
+      tags:
+      - 认证
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogoutRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LogoutRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LogoutRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Logout'
+          description: ''
+  /api/v1/auth/me/:
+    get:
+      operationId: api_v1_auth_me_list
+      description: GET / PATCH / PUT /api/v1/auth/me/
+      summary: 当前登录用户：查询 / 修改资料
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: 用于排序结果的字段。
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: 分页结果集中的页码。
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: 每页返回的结果数量。
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: 搜索关键词。
+        schema:
+          type: string
+      tags:
+      - 认证
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserList'
+          description: ''
+    put:
+      operationId: api_v1_auth_me_update
+      description: GET / PATCH / PUT /api/v1/auth/me/
+      summary: 当前登录用户：查询 / 修改资料
+      tags:
+      - 认证
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserUpdate'
+          description: ''
+    patch:
+      operationId: api_v1_auth_me_partial_update
+      description: GET / PATCH / PUT /api/v1/auth/me/
+      summary: 当前登录用户：查询 / 修改资料
+      tags:
+      - 认证
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserUpdateRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserUpdate'
+          description: ''
+  /api/v1/auth/refresh/:
+    post:
+      operationId: api_v1_auth_refresh_create
+      description: 'POST /api/v1/auth/refresh/  body: {refresh}'
+      summary: 刷新 access token
+      tags:
+      - 认证
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/v1/auth/register/:
+    post:
+      operationId: api_v1_auth_register_create
+      description: POST /api/v1/auth/register/
+      summary: 用户注册
+      tags:
+      - 认证
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegisterRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRegisterRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRegisterRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRegister'
+          description: ''
+  /api/v1/classrooms/:
+    get:
+      operationId: api_v1_classrooms_retrieve
+      description: 班级列表 + 建班。
+      summary: 班级列表
+      parameters:
+      - in: query
+        name: class_type
+        schema:
+          type: string
+        description: 按类型过滤：admin 行政班 / subject 学科班
+      - in: query
+        name: include_inactive
+        schema:
+          type: boolean
+        description: 是否含已归档班级
+      - in: query
+        name: keyword
+        schema:
+          type: string
+        description: 按名称 / 年级 / 学科搜索
+      tags:
+      - 班级管理
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: api_v1_classrooms_create
+      description: 班级列表 + 建班。
+      summary: 建班
+      tags:
+      - 班级管理
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClassroomWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ClassroomWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ClassroomWriteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/classrooms/{classroom_id}/:
+    get:
+      operationId: api_v1_classrooms_retrieve_2
+      description: 班级详情 / 更新 / 归档。
+      summary: 班级详情
+      parameters:
+      - in: path
+        name: classroom_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - 班级管理
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    put:
+      operationId: api_v1_classrooms_update
+      description: 班级详情 / 更新 / 归档。
+      summary: 全量更新
+      parameters:
+      - in: path
+        name: classroom_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - 班级管理
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClassroomWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ClassroomWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ClassroomWriteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    patch:
+      operationId: api_v1_classrooms_partial_update
+      description: 班级详情 / 更新 / 归档。
+      summary: 局部更新
+      parameters:
+      - in: path
+        name: classroom_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - 班级管理
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedClassroomWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedClassroomWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedClassroomWriteRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: api_v1_classrooms_destroy
+      description: 班级详情 / 更新 / 归档。
+      summary: 删除班级
+      parameters:
+      - in: path
+        name: classroom_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - 班级管理
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/classrooms/{classroom_id}/students/:
+    get:
+      operationId: api_v1_classrooms_students_retrieve
+      description: 成员列表 / 添加 / 移出。
+      summary: 成员列表
+      parameters:
+      - in: path
+        name: classroom_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - 班级管理
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: api_v1_classrooms_students_create
+      description: 成员列表 / 添加 / 移出。
+      summary: 添加学生（按 id / 学号 / 行政班整班导入）
+      parameters:
+      - in: path
+        name: classroom_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - 班级管理
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddStudentsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AddStudentsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AddStudentsRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: api_v1_classrooms_students_destroy
+      description: 成员列表 / 添加 / 移出。
+      summary: 移出学生
+      parameters:
+      - in: path
+        name: classroom_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - 班级管理
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/classrooms/options/:
+    get:
+      operationId: api_v1_classrooms_options_retrieve
+      description: 可分析 / 可管理的班级下拉（供成绩单、学情页按班筛选）。
+      summary: 班级下拉选项
+      tags:
+      - 班级管理
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/exams/:
+    get:
+      operationId: api_v1_exams_list
+      description: |-
+        考试的增删改查与开考。
+
+        同一个资源、两种视角：教师看配置，学生看「能不能考、考到哪了」。
+        用 ``get_permissions`` / ``get_queryset`` / ``get_serializer_class`` 三处分流，
+        而不是拆成两个 ViewSet——否则路由上会出现两个 `/exams/`，前端要记两套。
+      parameters:
+      - in: query
+        name: created_by
+        schema:
+          type: number
+      - in: query
+        name: is_open_now
+        schema:
+          type: boolean
+        description: 只看此刻可以开考的（已发布 + 在时间窗内）
+      - in: query
+        name: open_to_all
+        schema:
+          type: boolean
+      - name: ordering
+        required: false
+        in: query
+        description: 用于排序结果的字段。
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: 分页结果集中的页码。
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: 每页返回的结果数量。
+        schema:
+          type: integer
+      - in: query
+        name: paper
+        schema:
+          type: number
+      - name: search
+        required: false
+        in: query
+        description: 搜索关键词。
+        schema:
+          type: string
+      - in: query
+        name: start_from
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: start_to
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: status
+        schema:
+          type: string
+      - in: query
+        name: subject
+        schema:
+          type: string
+      tags:
+      - 考试
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedExamStudentList'
+          description: ''
+    post:
+      operationId: api_v1_exams_create
+      description: |-
+        考试的增删改查与开考。
+
+        同一个资源、两种视角：教师看配置，学生看「能不能考、考到哪了」。
+        用 ``get_permissions`` / ``get_queryset`` / ``get_serializer_class`` 三处分流，
+        而不是拆成两个 ViewSet——否则路由上会出现两个 `/exams/`，前端要记两套。
+      summary: 新建考试
+      tags:
+      - 考试
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExamWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExamWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExamWriteRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamDetail'
+          description: ''
+  /api/v1/exams/{id}/:
+    get:
+      operationId: api_v1_exams_retrieve
+      description: |-
+        考试的增删改查与开考。
+
+        同一个资源、两种视角：教师看配置，学生看「能不能考、考到哪了」。
+        用 ``get_permissions`` / ``get_queryset`` / ``get_serializer_class`` 三处分流，
+        而不是拆成两个 ViewSet——否则路由上会出现两个 `/exams/`，前端要记两套。
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 考试 的 唯一整数值。
+        required: true
+      tags:
+      - 考试
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamStudent'
+          description: ''
+    put:
+      operationId: api_v1_exams_update
+      description: |-
+        考试的增删改查与开考。
+
+        同一个资源、两种视角：教师看配置，学生看「能不能考、考到哪了」。
+        用 ``get_permissions`` / ``get_queryset`` / ``get_serializer_class`` 三处分流，
+        而不是拆成两个 ViewSet——否则路由上会出现两个 `/exams/`，前端要记两套。
+      summary: 修改考试
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 考试 的 唯一整数值。
+        required: true
+      tags:
+      - 考试
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExamWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExamWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExamWriteRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamDetail'
+          description: ''
+    patch:
+      operationId: api_v1_exams_partial_update
+      description: |-
+        考试的增删改查与开考。
+
+        同一个资源、两种视角：教师看配置，学生看「能不能考、考到哪了」。
+        用 ``get_permissions`` / ``get_queryset`` / ``get_serializer_class`` 三处分流，
+        而不是拆成两个 ViewSet——否则路由上会出现两个 `/exams/`，前端要记两套。
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 考试 的 唯一整数值。
+        required: true
+      tags:
+      - 考试
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedExamWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedExamWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedExamWriteRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamWrite'
+          description: ''
+    delete:
+      operationId: api_v1_exams_destroy
+      description: |-
+        考试的增删改查与开考。
+
+        同一个资源、两种视角：教师看配置，学生看「能不能考、考到哪了」。
+        用 ``get_permissions`` / ``get_queryset`` / ``get_serializer_class`` 三处分流，
+        而不是拆成两个 ViewSet——否则路由上会出现两个 `/exams/`，前端要记两套。
+      summary: 删除考试
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 考试 的 唯一整数值。
+        required: true
+      tags:
+      - 考试
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/exams/{id}/attempts/:
+    get:
+      operationId: api_v1_exams_attempts_retrieve
+      description: |-
+        考试的增删改查与开考。
+
+        同一个资源、两种视角：教师看配置，学生看「能不能考、考到哪了」。
+        用 ``get_permissions`` / ``get_queryset`` / ``get_serializer_class`` 三处分流，
+        而不是拆成两个 ViewSet——否则路由上会出现两个 `/exams/`，前端要记两套。
+      summary: 作答明细表（教师看板）
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 考试 的 唯一整数值。
+        required: true
+      - in: query
+        name: keyword
+        schema:
+          type: string
+        description: 按姓名 / 学号 / 用户名搜索
+      - in: query
+        name: status
+        schema:
+          type: string
+        description: 按状态筛选，如 in_progress
+      tags:
+      - 考试
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamDetail'
+          description: ''
+  /api/v1/exams/{id}/overview/:
+    get:
+      operationId: api_v1_exams_overview_retrieve
+      description: |-
+        考试的增删改查与开考。
+
+        同一个资源、两种视角：教师看配置，学生看「能不能考、考到哪了」。
+        用 ``get_permissions`` / ``get_queryset`` / ``get_serializer_class`` 三处分流，
+        而不是拆成两个 ViewSet——否则路由上会出现两个 `/exams/`，前端要记两套。
+      summary: 单场考试统计
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 考试 的 唯一整数值。
+        required: true
+      tags:
+      - 考试
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamDetail'
+          description: ''
+  /api/v1/exams/{id}/start/:
+    post:
+      operationId: api_v1_exams_start_create
+      description: |-
+        考试的增删改查与开考。
+
+        同一个资源、两种视角：教师看配置，学生看「能不能考、考到哪了」。
+        用 ``get_permissions`` / ``get_queryset`` / ``get_serializer_class`` 三处分流，
+        而不是拆成两个 ViewSet——否则路由上会出现两个 `/exams/`，前端要记两套。
+      summary: 开始 / 继续作答（学生）
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 考试 的 唯一整数值。
+        required: true
+      tags:
+      - 考试
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartExamRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StartExamRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StartExamRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamDetail'
+          description: ''
+  /api/v1/exams/{id}/status/:
+    post:
+      operationId: api_v1_exams_status_create
+      description: |-
+        考试的增删改查与开考。
+
+        同一个资源、两种视角：教师看配置，学生看「能不能考、考到哪了」。
+        用 ``get_permissions`` / ``get_queryset`` / ``get_serializer_class`` 三处分流，
+        而不是拆成两个 ViewSet——否则路由上会出现两个 `/exams/`，前端要记两套。
+      summary: 变更考试状态（发布 / 开始 / 结束 / 归档）
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 考试 的 唯一整数值。
+        required: true
+      tags:
+      - 考试
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExamStatusChangeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExamStatusChangeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExamStatusChangeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamDetail'
+          description: ''
+  /api/v1/exams/candidates/:
+    get:
+      operationId: api_v1_exams_candidates_retrieve
+      description: |-
+        建考试时挑「指定考生」用。按班级分组返回，前端「选一个班 = 选该班所有人」。
+
+        范围：教师只看自己可管理的班（自己创建 / 任班主任 / 授课）；
+        管理员看全部，且不在任何班里的学生单独归「未分班」一组。
+      summary: 可选学生名单
+      parameters:
+      - in: query
+        name: keyword
+        schema:
+          type: string
+        description: 按姓名 / 学号搜索
+      tags:
+      - 考试
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamDetail'
+          description: ''
+  /api/v1/exams/statistics/:
+    get:
+      operationId: api_v1_exams_statistics_retrieve
+      description: |-
+        考试的增删改查与开考。
+
+        同一个资源、两种视角：教师看配置，学生看「能不能考、考到哪了」。
+        用 ``get_permissions`` / ``get_queryset`` / ``get_serializer_class`` 三处分流，
+        而不是拆成两个 ViewSet——否则路由上会出现两个 `/exams/`，前端要记两套。
+      summary: 全部考试总览
+      tags:
+      - 考试
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamDetail'
+          description: ''
+  /api/v1/grading/answers/{answer_id}/review/:
+    post:
+      operationId: api_v1_grading_answers_review_create
+      description: 教师复核一道题。
+      summary: 复核一道题（改分 / 评语 / 一键采纳 AI 建议）
+      parameters:
+      - in: path
+        name: answer_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - 判分 · 教师
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnswerReviewRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AnswerReviewRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AnswerReviewRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/grading/attempts/{attempt_id}/finalize/:
+    post:
+      operationId: api_v1_grading_attempts_finalize_create
+      description: 出分：把作答推进到「已出分」，学生从此可见成绩。
+      summary: 出分
+      parameters:
+      - in: path
+        name: attempt_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - 判分 · 教师
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttemptFinalizeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AttemptFinalizeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AttemptFinalizeRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/grading/attempts/{attempt_id}/grade/:
+    post:
+      operationId: api_v1_grading_attempts_grade_create
+      description: 对一份作答判分。
+      summary: 判分（客观题自动 / with_ai 时加 AI 批主观题）
+      parameters:
+      - in: path
+        name: attempt_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - 判分 · 教师
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttemptGradeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AttemptGradeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AttemptGradeRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/grading/attempts/{attempt_id}/report/:
+    get:
+      operationId: api_v1_grading_attempts_report_retrieve
+      description: |-
+        成绩单：教师看全量，学生看自己的（按公开规则脱敏）。
+
+        学生会话访问时会**顺带触发一次客观题惰性判分**（幂等且不调大模型），
+        这样「交卷后立刻看到客观题得分」不需要教师先点一次按钮。
+      summary: 成绩单（逐题得分）
+      parameters:
+      - in: path
+        name: attempt_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - 成绩单
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/grading/calibration/:
+    get:
+      operationId: api_v1_grading_calibration_retrieve
+      description: AI 批改校准统计。
+      summary: AI 批改校准统计
+      tags:
+      - 成绩单
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/grading/exams/:
+    get:
+      operationId: api_v1_grading_exams_retrieve
+      description: 有作答记录的考试列表——批改工作台顶部的考试选择器。
+      summary: 可批改的考试列表
+      tags:
+      - 判分 · 教师
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/grading/feedback/:
+    get:
+      operationId: api_v1_grading_feedback_list
+      description: 复核记录（只读）：批改工作台展示「这道题我上次改成多少」。
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: 用于排序结果的字段。
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: 分页结果集中的页码。
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: 每页返回的结果数量。
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: 搜索关键词。
+        schema:
+          type: string
+      tags:
+      - 判分 · 教师
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGradingFeedbackList'
+          description: ''
+  /api/v1/grading/feedback/{id}/:
+    get:
+      operationId: api_v1_grading_feedback_retrieve
+      description: 复核记录（只读）：批改工作台展示「这道题我上次改成多少」。
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 复核记录 的 唯一整数值。
+        required: true
+      tags:
+      - 判分 · 教师
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GradingFeedback'
+          description: ''
+  /api/v1/grading/queue/:
+    get:
+      operationId: api_v1_grading_queue_retrieve
+      description: 待批改队列。
+      summary: 待批改队列
+      parameters:
+      - in: query
+        name: exam_id
+        schema:
+          type: integer
+        description: 按考试过滤（必填）
+      - in: query
+        name: only_pending
+        schema:
+          type: boolean
+        description: 只看还没批完的（默认 true）
+      tags:
+      - 判分 · 教师
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/grading/scoreboard/:
+    get:
+      operationId: api_v1_grading_scoreboard_retrieve
+      description: 班级成绩单。
+      summary: 班级成绩单（排名 / 分布 / 及格率）
+      parameters:
+      - in: query
+        name: classroom_id
+        schema:
+          type: integer
+        description: 按班级过滤（可选）
+      - in: query
+        name: exam_id
+        schema:
+          type: integer
+        description: 考试 id（必填）
+      - in: query
+        name: keyword
+        schema:
+          type: string
+        description: 按姓名 / 学号搜索
+      tags:
+      - 成绩单
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/grading/wrong-book/:
+    get:
+      operationId: api_v1_grading_wrong_book_retrieve
+      description: 错题本。
+      summary: 错题本
+      parameters:
+      - in: query
+        name: limit
+        schema:
+          type: integer
+        description: 返回条数上限，默认 200
+      - in: query
+        name: student_id
+        schema:
+          type: integer
+        description: 教师查看指定学生（学生只能看自己）
+      - in: query
+        name: subject
+        schema:
+          type: string
+        description: 按学科过滤
+      tags:
+      - 成绩单
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/knowledge-points/:
+    get:
+      operationId: api_v1_knowledge_points_list
+      description: 知识点的增删改查。
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - in: query
+        name: is_root
+        schema:
+          type: boolean
+        description: 只看根节点
+      - in: query
+        name: keyword
+        schema:
+          type: string
+        description: 关键字
+      - name: ordering
+        required: false
+        in: query
+        description: 用于排序结果的字段。
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: 分页结果集中的页码。
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: 每页返回的结果数量。
+        schema:
+          type: integer
+      - in: query
+        name: parent
+        schema:
+          type: number
+      - name: search
+        required: false
+        in: query
+        description: 搜索关键词。
+        schema:
+          type: string
+      - in: query
+        name: subject
+        schema:
+          type: string
+      tags:
+      - 题库 · 知识点
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedKnowledgePointList'
+          description: ''
+    post:
+      operationId: api_v1_knowledge_points_create
+      description: 知识点的增删改查。
+      tags:
+      - 题库 · 知识点
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgePointRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/KnowledgePointRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/KnowledgePointRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgePoint'
+          description: ''
+  /api/v1/knowledge-points/{id}/:
+    get:
+      operationId: api_v1_knowledge_points_retrieve
+      description: 知识点的增删改查。
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 知识点 的 唯一整数值。
+        required: true
+      tags:
+      - 题库 · 知识点
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgePoint'
+          description: ''
+    put:
+      operationId: api_v1_knowledge_points_update
+      description: 知识点的增删改查。
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 知识点 的 唯一整数值。
+        required: true
+      tags:
+      - 题库 · 知识点
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgePointRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/KnowledgePointRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/KnowledgePointRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgePoint'
+          description: ''
+    patch:
+      operationId: api_v1_knowledge_points_partial_update
+      description: 知识点的增删改查。
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 知识点 的 唯一整数值。
+        required: true
+      tags:
+      - 题库 · 知识点
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedKnowledgePointRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedKnowledgePointRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedKnowledgePointRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgePoint'
+          description: ''
+    delete:
+      operationId: api_v1_knowledge_points_destroy
+      description: 知识点的增删改查。
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 知识点 的 唯一整数值。
+        required: true
+      tags:
+      - 题库 · 知识点
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/knowledge-points/{id}/questions/:
+    get:
+      operationId: api_v1_knowledge_points_questions_retrieve
+      description: 知识点的增删改查。
+      summary: 知识点下的题目（含子知识点）
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 知识点 的 唯一整数值。
+        required: true
+      tags:
+      - 题库 · 知识点
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgePoint'
+          description: ''
+  /api/v1/knowledge-points/tree/:
+    get:
+      operationId: api_v1_knowledge_points_tree_retrieve
+      description: 知识点的增删改查。
+      summary: 知识点树
+      parameters:
+      - in: query
+        name: include_inactive
+        schema:
+          type: boolean
+        description: 是否包含已停用节点
+      - in: query
+        name: subject
+        schema:
+          type: string
+        description: 按学科筛选
+      tags:
+      - 题库 · 知识点
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgePoint'
+          description: ''
+  /api/v1/papers/:
+    get:
+      operationId: api_v1_papers_list
+      description: 试卷的增删改查与组卷编排。
+      parameters:
+      - in: query
+        name: created_after
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: created_before
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: created_by
+        schema:
+          type: number
+      - in: query
+        name: duration_gte
+        schema:
+          type: integer
+      - in: query
+        name: duration_lte
+        schema:
+          type: integer
+      - in: query
+        name: generation_mode
+        schema:
+          type: string
+          title: 组卷方式
+          enum:
+          - ai
+          - hybrid
+          - manual
+          - random
+        description: |-
+          * `manual` - 手动组卷
+          * `ai` - AI 智能组卷
+          * `random` - 随机组卷
+          * `hybrid` - AI + 手动调整
+      - in: query
+        name: is_published
+        schema:
+          type: boolean
+      - in: query
+        name: keyword
+        schema:
+          type: string
+        description: 关键字
+      - in: query
+        name: max_score
+        schema:
+          type: number
+      - in: query
+        name: min_score
+        schema:
+          type: number
+      - name: ordering
+        required: false
+        in: query
+        description: 用于排序结果的字段。
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: 分页结果集中的页码。
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: 每页返回的结果数量。
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: 搜索关键词。
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          title: 状态
+          enum:
+          - archived
+          - draft
+          - published
+        description: |-
+          * `draft` - 草稿
+          * `published` - 已发布
+          * `archived` - 已归档
+      - in: query
+        name: subject
+        schema:
+          type: string
+      - in: query
+        name: title
+        schema:
+          type: string
+      tags:
+      - 试卷 · 组卷
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPaperListList'
+          description: ''
+    post:
+      operationId: api_v1_papers_create
+      description: 试卷的增删改查与组卷编排。
+      summary: 新建试卷
+      tags:
+      - 试卷 · 组卷
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaperWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PaperWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PaperWriteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaperDetail'
+          description: ''
+  /api/v1/papers/{id}/:
+    get:
+      operationId: api_v1_papers_retrieve
+      description: 试卷的增删改查与组卷编排。
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 试卷 的 唯一整数值。
+        required: true
+      tags:
+      - 试卷 · 组卷
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaperDetail'
+          description: ''
+    put:
+      operationId: api_v1_papers_update
+      description: 试卷的增删改查与组卷编排。
+      summary: 修改试卷卷头
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 试卷 的 唯一整数值。
+        required: true
+      tags:
+      - 试卷 · 组卷
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaperWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PaperWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PaperWriteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaperDetail'
+          description: ''
+    patch:
+      operationId: api_v1_papers_partial_update
+      description: 试卷的增删改查与组卷编排。
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 试卷 的 唯一整数值。
+        required: true
+      tags:
+      - 试卷 · 组卷
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPaperWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPaperWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPaperWriteRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaperWrite'
+          description: ''
+    delete:
+      operationId: api_v1_papers_destroy
+      description: 试卷的增删改查与组卷编排。
+      summary: 删除试卷
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 试卷 的 唯一整数值。
+        required: true
+      tags:
+      - 试卷 · 组卷
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/papers/{id}/ai-notes/:
+    post:
+      operationId: api_v1_papers_ai_notes_create
+      description: 试卷的增删改查与组卷编排。
+      summary: 生成 / 重写组卷说明
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 试卷 的 唯一整数值。
+        required: true
+      tags:
+      - 试卷 · 组卷
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExplainPaperRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExplainPaperRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExplainPaperRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaperDetail'
+          description: ''
+  /api/v1/papers/{id}/analysis/:
+    get:
+      operationId: api_v1_papers_analysis_retrieve
+      description: 试卷的增删改查与组卷编排。
+      summary: 组卷质量分析
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 试卷 的 唯一整数值。
+        required: true
+      - in: query
+        name: planned
+        schema:
+          type: array
+          items:
+            type: integer
+        description: 计划覆盖的知识点 id，用于计算覆盖率（可重复传）
+      tags:
+      - 试卷 · 组卷
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaperDetail'
+          description: ''
+  /api/v1/papers/{id}/clone/:
+    post:
+      operationId: api_v1_papers_clone_create
+      description: 试卷的增删改查与组卷编排。
+      summary: 复制试卷
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 试卷 的 唯一整数值。
+        required: true
+      tags:
+      - 试卷 · 组卷
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloneRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CloneRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CloneRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaperDetail'
+          description: ''
+  /api/v1/papers/{id}/export/:
+    get:
+      operationId: api_v1_papers_export_retrieve
+      description: 试卷的增删改查与组卷编排。
+      summary: 导出卷面
+      parameters:
+      - in: query
+        name: file_format
+        schema:
+          type: string
+        description: html（可打印）或 md（Markdown）
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 试卷 的 唯一整数值。
+        required: true
+      - in: query
+        name: with_analysis
+        schema:
+          type: boolean
+        description: 答案页是否带解析
+      - in: query
+        name: with_answer
+        schema:
+          type: boolean
+        description: 是否附加参考答案页
+      tags:
+      - 试卷 · 组卷
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaperDetail'
+          description: ''
+  /api/v1/papers/{id}/preview/:
+    get:
+      operationId: api_v1_papers_preview_retrieve
+      description: 试卷的增删改查与组卷编排。
+      summary: 卷面预览（按大题分组）
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 试卷 的 唯一整数值。
+        required: true
+      tags:
+      - 试卷 · 组卷
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaperDetail'
+          description: ''
+  /api/v1/papers/{id}/questions/:
+    post:
+      operationId: api_v1_papers_questions_create
+      description: 试卷的增删改查与组卷编排。
+      summary: 往试卷里加题
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 试卷 的 唯一整数值。
+        required: true
+      tags:
+      - 试卷 · 组卷
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddQuestionsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AddQuestionsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AddQuestionsRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaperDetail'
+          description: ''
+  /api/v1/papers/{id}/remove-questions/:
+    post:
+      operationId: api_v1_papers_remove_questions_create
+      description: 试卷的增删改查与组卷编排。
+      summary: 把题目移出试卷
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 试卷 的 唯一整数值。
+        required: true
+      tags:
+      - 试卷 · 组卷
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoveQuestionsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RemoveQuestionsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RemoveQuestionsRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaperDetail'
+          description: ''
+  /api/v1/papers/{id}/reorder/:
+    post:
+      operationId: api_v1_papers_reorder_create
+      description: 试卷的增删改查与组卷编排。
+      summary: 调整题目顺序
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 试卷 的 唯一整数值。
+        required: true
+      tags:
+      - 试卷 · 组卷
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReorderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReorderRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReorderRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaperDetail'
+          description: ''
+  /api/v1/papers/{id}/scores/:
+    post:
+      operationId: api_v1_papers_scores_create
+      description: 试卷的增删改查与组卷编排。
+      summary: 批量调分
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 试卷 的 唯一整数值。
+        required: true
+      tags:
+      - 试卷 · 组卷
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchScoreRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BatchScoreRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BatchScoreRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaperDetail'
+          description: ''
+  /api/v1/papers/{id}/status/:
+    post:
+      operationId: api_v1_papers_status_create
+      description: 试卷的增删改查与组卷编排。
+      summary: 变更试卷状态（发布 / 退回草稿 / 归档）
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 试卷 的 唯一整数值。
+        required: true
+      tags:
+      - 试卷 · 组卷
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatusChangeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StatusChangeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StatusChangeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaperDetail'
+          description: ''
+  /api/v1/papers/ai-compose/:
+    post:
+      operationId: api_v1_papers_ai_compose_create
+      description: 试卷的增删改查与组卷编排。
+      summary: 智能组卷（dry_run=true 时只试算）
+      tags:
+      - 试卷 · 组卷
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComposeRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ComposeRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ComposeRequestRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaperDetail'
+          description: ''
+  /api/v1/papers/pool/:
+    get:
+      operationId: api_v1_papers_pool_retrieve
+      description: 试卷的增删改查与组卷编排。
+      summary: 题库家底（各题型 × 各难度库存）
+      parameters:
+      - in: query
+        name: knowledge_point_ids
+        schema:
+          type: array
+          items:
+            type: integer
+        description: 按知识点筛选
+      - in: query
+        name: subject
+        schema:
+          type: string
+        description: 按学科筛选
+      tags:
+      - 试卷 · 组卷
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaperDetail'
+          description: ''
+  /api/v1/papers/random-compose/:
+    post:
+      operationId: api_v1_papers_random_compose_create
+      description: 试卷的增删改查与组卷编排。
+      summary: 随机组卷（按所选知识点，蓝图自动生成，不调 AI）
+      tags:
+      - 试卷 · 组卷
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RandomComposeRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RandomComposeRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RandomComposeRequestRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaperDetail'
+          description: ''
+  /api/v1/papers/statistics/:
+    get:
+      operationId: api_v1_papers_statistics_retrieve
+      description: 试卷的增删改查与组卷编排。
+      summary: 试卷统计总览
+      tags:
+      - 试卷 · 组卷
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaperDetail'
+          description: ''
+  /api/v1/proctoring/attempts/{attempt_id}/evidence/:
+    get:
+      operationId: api_v1_proctoring_attempts_evidence_retrieve
+      description: 一次作答的逐条证据链。
+      summary: 作答证据链（逐条行为埋点 + 命中规则 + 异常分）
+      parameters:
+      - in: path
+        name: attempt_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - 作弊行为检测
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/proctoring/exams/:
+    get:
+      operationId: api_v1_proctoring_exams_retrieve
+      description: 有行为埋点的考试列表。
+      summary: 有行为数据的考试列表
+      tags:
+      - 作弊行为检测
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/proctoring/exams/{exam_id}/report/:
+    get:
+      operationId: api_v1_proctoring_exams_report_retrieve
+      description: 某场考试的作弊检测报告：可疑考生列表 + 概览 + 异常检测。
+      summary: 班级作弊检测报告（可疑考生列表）
+      parameters:
+      - in: path
+        name: exam_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - 作弊行为检测
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/proctoring/rules/:
+    get:
+      operationId: api_v1_proctoring_rules_retrieve
+      description: 规则目录与阈值说明。
+      summary: 作弊检测规则与阈值说明
+      tags:
+      - 作弊行为检测
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/questions/:
+    get:
+      operationId: api_v1_questions_list
+      description: 题目资源。
+      parameters:
+      - in: query
+        name: created_by
+        schema:
+          type: number
+      - in: query
+        name: difficulty
+        schema:
+          type: integer
+          title: 难度
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+        description: |-
+          * `1` - 简单
+          * `2` - 中等
+          * `3` - 困难
+          * `4` - 挑战
+      - in: query
+        name: difficulty_gte
+        schema:
+          type: integer
+      - in: query
+        name: difficulty_lte
+        schema:
+          type: integer
+      - in: query
+        name: has_ai
+        schema:
+          type: boolean
+        description: 只看 AI 生成
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - in: query
+        name: is_reviewed
+        schema:
+          type: boolean
+      - in: query
+        name: keyword
+        schema:
+          type: string
+        description: 关键字
+      - in: query
+        name: knowledge_point
+        schema:
+          type: number
+        description: 知识点（含子知识点）
+      - in: query
+        name: knowledge_point_exact
+        schema:
+          type: integer
+        description: 知识点（精确匹配）
+      - name: ordering
+        required: false
+        in: query
+        description: 用于排序结果的字段。
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: 分页结果集中的页码。
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: 每页返回的结果数量。
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: 搜索关键词。
+        schema:
+          type: string
+      - in: query
+        name: source
+        schema:
+          type: string
+          title: 来源
+          enum:
+          - ai
+          - import
+          - manual
+        description: |-
+          * `manual` - 手动录入
+          * `ai` - AI 生成
+          * `import` - 批量导入
+      - in: query
+        name: subject
+        schema:
+          type: string
+      - in: query
+        name: type
+        schema:
+          type: string
+          title: 题型
+          enum:
+          - essay
+          - fill
+          - judge
+          - multiple
+          - short
+          - single
+        description: |-
+          * `single` - 单选题
+          * `multiple` - 多选题
+          * `judge` - 判断题
+          * `fill` - 填空题
+          * `short` - 简答题
+          * `essay` - 论述题
+      tags:
+      - 题库 · 题目
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedQuestionListList'
+          description: ''
+    post:
+      operationId: api_v1_questions_create
+      description: 题目资源。
+      tags:
+      - 题库 · 题目
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/QuestionWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/QuestionWriteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionWrite'
+          description: ''
+  /api/v1/questions/{id}/:
+    get:
+      operationId: api_v1_questions_retrieve
+      description: 题目资源。
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 题目 的 唯一整数值。
+        required: true
+      tags:
+      - 题库 · 题目
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionDetail'
+          description: ''
+    put:
+      operationId: api_v1_questions_update
+      description: 题目资源。
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 题目 的 唯一整数值。
+        required: true
+      tags:
+      - 题库 · 题目
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/QuestionWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/QuestionWriteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionWrite'
+          description: ''
+    patch:
+      operationId: api_v1_questions_partial_update
+      description: 题目资源。
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 题目 的 唯一整数值。
+        required: true
+      tags:
+      - 题库 · 题目
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedQuestionWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedQuestionWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedQuestionWriteRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionWrite'
+          description: ''
+    delete:
+      operationId: api_v1_questions_destroy
+      description: 题目资源。
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 题目 的 唯一整数值。
+        required: true
+      tags:
+      - 题库 · 题目
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/questions/{id}/ai-explain/:
+    post:
+      operationId: api_v1_questions_ai_explain_create
+      description: 题目资源。
+      summary: AI 生成 / 重写题目解析
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 题目 的 唯一整数值。
+        required: true
+      tags:
+      - 题库 · 题目
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/QuestionDetailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/QuestionDetailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionDetail'
+          description: ''
+  /api/v1/questions/{id}/ai-grade/:
+    post:
+      operationId: api_v1_questions_ai_grade_create
+      description: 题目资源。
+      summary: 主观题 AI 试评
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 题目 的 唯一整数值。
+        required: true
+      tags:
+      - 题库 · 题目
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/QuestionDetailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/QuestionDetailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionDetail'
+          description: ''
+  /api/v1/questions/ai-generate/:
+    post:
+      operationId: api_v1_questions_ai_generate_create
+      description: 题目资源。
+      summary: AI 辅助出题（返回草稿）
+      tags:
+      - 题库 · 题目
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIGenerateRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AIGenerateRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AIGenerateRequestRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionDetail'
+          description: ''
+  /api/v1/questions/batch/:
+    post:
+      operationId: api_v1_questions_batch_create
+      description: 题目资源。
+      summary: 批量入库（确认 AI 草稿 / 导入结果）
+      tags:
+      - 题库 · 题目
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionBatchCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/QuestionBatchCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/QuestionBatchCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionDetail'
+          description: ''
+  /api/v1/questions/export/:
+    get:
+      operationId: api_v1_questions_export_retrieve
+      description: 题目资源。
+      summary: 导出题目
+      parameters:
+      - in: query
+        name: file_format
+        schema:
+          type: string
+        description: xlsx（默认）或 csv；注意不要用 format，那是 DRF 的内容协商参数
+      tags:
+      - 题库 · 题目
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionDetail'
+          description: ''
+  /api/v1/questions/import/:
+    post:
+      operationId: api_v1_questions_import_create
+      description: 题目资源。
+      summary: 批量导入题目（xlsx / csv）
+      tags:
+      - 题库 · 题目
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/QuestionDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/QuestionDetailRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionDetailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionDetail'
+          description: ''
+  /api/v1/questions/import-template/:
+    get:
+      operationId: api_v1_questions_import_template_retrieve
+      description: 题目资源。
+      summary: 下载导入模板
+      tags:
+      - 题库 · 题目
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionDetail'
+          description: ''
+  /api/v1/questions/statistics/:
+    get:
+      operationId: api_v1_questions_statistics_retrieve
+      description: 题目资源。
+      summary: 题库统计（供 ECharts 出题质量分析用）
+      tags:
+      - 题库 · 题目
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionDetail'
+          description: ''
+  /api/v1/questions/subjects/:
+    get:
+      operationId: api_v1_questions_subjects_retrieve
+      description: |-
+        当前教师可见范围内的科目分类。
+
+        只统计启用中的题目；``get_queryset`` 已按学科隔离，所以学科教师
+        只会拿到自己科目的那一项。
+      summary: 题库科目分类（各科目题数，供筛选下拉）
+      tags:
+      - 题库 · 题目
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionDetail'
+          description: ''
+  /api/v1/recommend/students/{student_id}/practice/:
+    get:
+      operationId: api_v1_recommend_students_practice_retrieve
+      description: |-
+        每日练习推荐。
+
+        * ``GET``  —— 完全确定性的一份清单，推荐理由由本地规则生成（不调大模型）；
+        * ``POST`` —— 同一份清单，但推荐理由交给大模型改写（失败自动降级为本地理由）。
+      summary: 每日练习推荐（本地推荐理由）
+      parameters:
+      - in: query
+        name: offset
+        schema:
+          type: integer
+        description: 翻页偏移，「换一批」时调大
+      - in: query
+        name: size
+        schema:
+          type: integer
+        description: 推荐题数，默认 6
+      - in: path
+        name: student_id
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: subject
+        schema:
+          type: string
+        description: 按学科过滤
+      tags:
+      - 个性化推荐
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: api_v1_recommend_students_practice_create
+      description: |-
+        每日练习推荐。
+
+        * ``GET``  —— 完全确定性的一份清单，推荐理由由本地规则生成（不调大模型）；
+        * ``POST`` —— 同一份清单，但推荐理由交给大模型改写（失败自动降级为本地理由）。
+      summary: 每日练习推荐（AI 改写理由）
+      parameters:
+      - in: path
+        name: student_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - 个性化推荐
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PracticeReasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PracticeReasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PracticeReasonRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/system/overview/:
+    get:
+      operationId: api_v1_system_overview_retrieve
+      description: GET /api/v1/system/overview/ —— 一次返回全部系统级指标。
+      summary: 管理端数据总览（管理员）
+      tags:
+      - 系统
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/users/:
+    get:
+      operationId: api_v1_users_list
+      description: 用户资源的增删改查（默认仅管理员可用）。
+      parameters:
+      - in: query
+        name: classroom
+        schema:
+          type: number
+        description: 班级
+      - in: query
+        name: created_after
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: created_before
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - in: query
+        name: keyword
+        schema:
+          type: string
+        description: 关键字
+      - name: ordering
+        required: false
+        in: query
+        description: 用于排序结果的字段。
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: 分页结果集中的页码。
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: 每页返回的结果数量。
+        schema:
+          type: integer
+      - in: query
+        name: role
+        schema:
+          type: string
+          title: 角色
+          enum:
+          - admin
+          - student
+          - teacher
+        description: |-
+          * `admin` - 管理员
+          * `teacher` - 教师
+          * `student` - 学生
+      - in: query
+        name: school
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: 搜索关键词。
+        schema:
+          type: string
+      - in: query
+        name: subject
+        schema:
+          type: string
+        description: 学科
+      tags:
+      - 用户管理
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserList'
+          description: ''
+    post:
+      operationId: api_v1_users_create
+      description: |-
+        管理员直接建号：需要带初始密码，且必须通过 AUTH_PASSWORD_VALIDATORS。
+
+        学号 / 工号管理员可以手填（不受注册入口的限制）；没填则自动派发：
+        教师派工号，学生按 ``grade_year`` 派学号。
+      tags:
+      - 用户管理
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AdminUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AdminUserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUser'
+          description: ''
+  /api/v1/users/{id}/:
+    get:
+      operationId: api_v1_users_retrieve
+      description: 用户资源的增删改查（默认仅管理员可用）。
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 用户 的 唯一整数值。
+        required: true
+      tags:
+      - 用户管理
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: api_v1_users_update
+      description: 用户资源的增删改查（默认仅管理员可用）。
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 用户 的 唯一整数值。
+        required: true
+      tags:
+      - 用户管理
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AdminUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AdminUserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUser'
+          description: ''
+    patch:
+      operationId: api_v1_users_partial_update
+      description: 用户资源的增删改查（默认仅管理员可用）。
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 用户 的 唯一整数值。
+        required: true
+      tags:
+      - 用户管理
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAdminUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAdminUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAdminUserRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUser'
+          description: ''
+    delete:
+      operationId: api_v1_users_destroy
+      description: 用户资源的增删改查（默认仅管理员可用）。
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 用户 的 唯一整数值。
+        required: true
+      tags:
+      - 用户管理
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/users/{id}/reset-password/:
+    post:
+      operationId: api_v1_users_reset_password_create
+      description: |-
+        重置某账号的密码。
+
+        接口签名保持不变（仍是 ``POST /users/{id}/reset-password/``）：
+          * body 不带 ``new_password`` → 服务端随机生成 12 位强密码（AC-19）；
+          * body 带 ``new_password`` → 必须通过 ``AUTH_PASSWORD_VALIDATORS``（AC-20）。
+
+        明文**只出现在 ``data.password`` 里一次**，绝不拼进 ``message``
+        （旧实现会把它写进 toast 与日志，等同于二次泄露，D-3 / 陷阱 2）。
+      summary: 重置密码（管理员）
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 用户 的 唯一整数值。
+        required: true
+      tags:
+      - 用户管理
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/v1/users/{id}/toggle-active/:
+    post:
+      operationId: api_v1_users_toggle_active_create
+      description: 用户资源的增删改查（默认仅管理员可用）。
+      summary: 启用 / 停用账号
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: 标识此 用户 的 唯一整数值。
+        required: true
+      tags:
+      - 用户管理
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/v1/users/students/:
+    get:
+      operationId: api_v1_users_students_retrieve
+      description: 用户资源的增删改查（默认仅管理员可用）。
+      summary: 学生列表
+      tags:
+      - 用户管理
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/v1/users/teachers/:
+    get:
+      operationId: api_v1_users_teachers_retrieve
+      description: 用户资源的增删改查（默认仅管理员可用）。
+      summary: 教师列表
+      tags:
+      - 用户管理
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+components:
+  schemas:
+    AIChatRequest:
+      type: object
+      description: |-
+        调试接口入参。
+
+        两种用法二选一：
+          * 传 ``prompt`` —— 走某个业务场景的提示词模板（推荐，能验证真实链路）；
+          * 传 ``messages`` —— 直接给一段对话，纯聊天调试。
+      properties:
+        prompt:
+          type: string
+          description: 用户输入内容
+        system:
+          type: string
+          description: 系统提示词
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatMessage'
+          description: 自定义消息列表
+        scene:
+          type: string
+          default: generic
+          description: 业务场景标识
+        variables:
+          type: object
+          additionalProperties: {}
+          description: 场景提示词模板的占位符变量
+        provider:
+          type: string
+          description: 临时指定平台
+        json_mode:
+          type: boolean
+          default: false
+        temperature:
+          type: number
+          format: double
+          maximum: 2.0
+          minimum: 0.0
+          default: 0.7
+        max_tokens:
+          type: integer
+          maximum: 32000
+          minimum: 1
+          nullable: true
+    AIChatRequestRequest:
+      type: object
+      description: |-
+        调试接口入参。
+
+        两种用法二选一：
+          * 传 ``prompt`` —— 走某个业务场景的提示词模板（推荐，能验证真实链路）；
+          * 传 ``messages`` —— 直接给一段对话，纯聊天调试。
+      properties:
+        prompt:
+          type: string
+          description: 用户输入内容
+        system:
+          type: string
+          description: 系统提示词
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatMessageRequest'
+          description: 自定义消息列表
+        scene:
+          type: string
+          minLength: 1
+          default: generic
+          description: 业务场景标识
+        variables:
+          type: object
+          additionalProperties: {}
+          description: 场景提示词模板的占位符变量
+        provider:
+          type: string
+          description: 临时指定平台
+        json_mode:
+          type: boolean
+          default: false
+        temperature:
+          type: number
+          format: double
+          maximum: 2.0
+          minimum: 0.0
+          default: 0.7
+        max_tokens:
+          type: integer
+          maximum: 32000
+          minimum: 1
+          nullable: true
+    AIGenerateRequestRequest:
+      type: object
+      description: AI 出题入参。
+      properties:
+        subject:
+          type: string
+          default: ''
+        knowledge_points:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          description: 知识点名称列表
+        knowledge_point_ids:
+          type: array
+          items:
+            type: integer
+          description: 也可以直接传知识点 id，会自动补出名称
+        question_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionTypesEnum'
+          default:
+          - single
+        difficulty:
+          allOf:
+          - $ref: '#/components/schemas/DifficultyEnum'
+          default: 2
+        count:
+          type: integer
+          maximum: 20
+          minimum: 1
+          default: 5
+        source_text:
+          type: string
+          default: ''
+          description: 教材段落 / 命题素材
+        provider:
+          type: string
+          default: ''
+    ActionEnum:
+      enum:
+      - accept
+      - adjust
+      - override
+      type: string
+      description: |-
+        * `accept` - 直接采纳建议分
+        * `adjust` - 在建议分基础上调整
+        * `override` - 完全自评
+    AddQuestionsRequest:
+      type: object
+      description: 往卷子里加题。
+      properties:
+        question_ids:
+          type: array
+          items:
+            type: integer
+          minItems: 1
+        score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+        strict:
+          type: boolean
+          default: true
+          description: True=遇到已在卷内的题直接报错；False=静默跳过（AI 组卷用）
+      required:
+      - question_ids
+    AddStudentsRequest:
+      type: object
+      description: |-
+        添加学生：按 id / 按学号 / 从行政班整班导入（三者至少提供一个）。
+
+        ``from_classroom_id`` 只做「是不是整数」的形状校验；「是不是启用的行政班」
+        由视图查库判断（那里的错误是 400 业务提示，比字段级报错更贴近用户操作）。
+      properties:
+        student_ids:
+          type: array
+          items:
+            type: integer
+        student_nos:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        from_classroom_id:
+          type: integer
+          nullable: true
+    AdminUser:
+      type: object
+      description: |-
+        管理员操作用户的序列化器：可以改角色、学科与启用状态。
+
+        ``subject``（任教学科）由管理端维护（U-1）：教师账号可绑定学科，
+        候选人列表来自 ``overview.options.subjects``，但字段本身是自由文本（Q-4）。
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          title: 用户名
+          description: 必填；长度为150个字符或以下；只能包含字母、数字、特殊字符“@”、“.”、“-”和“_”。
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: 邮箱
+          maxLength: 254
+        real_name:
+          type: string
+          title: 真实姓名
+          maxLength: 32
+        role:
+          allOf:
+          - $ref: '#/components/schemas/Role273Enum'
+          title: 角色
+        role_display:
+          type: string
+          readOnly: true
+        phone:
+          type: string
+          title: 手机号
+          maxLength: 20
+        student_no:
+          type: string
+          title: 学号 / 工号
+          description: 学生填学号，教师填工号；唯一性在序列化器里校验
+          maxLength: 32
+        school:
+          type: string
+          title: 学校 / 院系
+          maxLength: 64
+        subject:
+          type: string
+          title: 任教学科
+          description: 教师专属：只管理该学科的资源（题库/试卷/考试）；留空表示不限学科
+          maxLength: 64
+        avatar:
+          type: string
+          format: uri
+          nullable: true
+          title: 头像
+        is_active:
+          type: boolean
+          title: 有效
+          description: 指明用户是否被认为是活跃的。以反选代替删除帐号。
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+          title: 加入日期
+      required:
+      - date_joined
+      - email
+      - id
+      - role_display
+      - username
+    AdminUserRequest:
+      type: object
+      description: |-
+        管理员操作用户的序列化器：可以改角色、学科与启用状态。
+
+        ``subject``（任教学科）由管理端维护（U-1）：教师账号可绑定学科，
+        候选人列表来自 ``overview.options.subjects``，但字段本身是自由文本（Q-4）。
+      properties:
+        username:
+          type: string
+          minLength: 1
+          title: 用户名
+          description: 必填；长度为150个字符或以下；只能包含字母、数字、特殊字符“@”、“.”、“-”和“_”。
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          minLength: 1
+          title: 邮箱
+          maxLength: 254
+        real_name:
+          type: string
+          title: 真实姓名
+          maxLength: 32
+        role:
+          allOf:
+          - $ref: '#/components/schemas/Role273Enum'
+          title: 角色
+        phone:
+          type: string
+          title: 手机号
+          maxLength: 20
+        student_no:
+          type: string
+          title: 学号 / 工号
+          description: 学生填学号，教师填工号；唯一性在序列化器里校验
+          maxLength: 32
+        school:
+          type: string
+          title: 学校 / 院系
+          maxLength: 64
+        subject:
+          type: string
+          title: 任教学科
+          description: 教师专属：只管理该学科的资源（题库/试卷/考试）；留空表示不限学科
+          maxLength: 64
+        avatar:
+          type: string
+          format: binary
+          nullable: true
+          title: 头像
+        is_active:
+          type: boolean
+          title: 有效
+          description: 指明用户是否被认为是活跃的。以反选代替删除帐号。
+      required:
+      - email
+      - username
+    AnswerItemRequest:
+      type: object
+      description: 一道题的作答内容。
+      properties:
+        paper_question_id:
+          type: integer
+        selected_labels:
+          type: string
+          maxLength: 32
+        answer_text:
+          type: string
+        is_flagged:
+          type: boolean
+        time_spent_seconds:
+          type: integer
+          maximum: 86400
+          minimum: 0
+      required:
+      - paper_question_id
+    AnswerReviewRequest:
+      type: object
+      description: |-
+        教师复核一道题。
+
+        两种用法互斥但都支持：
+          * ``accept_ai=true`` —— 一键采纳 AI 建议分；
+          * 给 ``score``      —— 教师自己定分。
+      properties:
+        score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          nullable: true
+          description: 复核后的分数；accept_ai=true 时忽略
+        comment:
+          type: string
+          default: ''
+          description: 教师评语，会覆盖原评语
+        accept_ai:
+          type: boolean
+          default: false
+        action:
+          nullable: true
+          description: |-
+            处置方式；不传则按有无 AI 建议自动判定
+
+            * `accept` - 直接采纳建议分
+            * `adjust` - 在建议分基础上调整
+            * `override` - 完全自评
+          oneOf:
+          - $ref: '#/components/schemas/ActionEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+    AttemptFinalizeRequest:
+      type: object
+      description: 出分（目前无需参数，留出结构以便将来加「通知学生」等开关）。
+      properties:
+        notify:
+          type: boolean
+          default: false
+    AttemptGradeRequest:
+      type: object
+      description: 判分入参。
+      properties:
+        with_ai:
+          type: boolean
+          default: false
+          description: 是否同时调用大模型批改主观题（会消耗 token，默认关闭）
+        policy:
+          nullable: true
+          description: |-
+            多选题给分策略；不传则用考试自己的配置
+
+            * `strict` - 严格：全对才得分
+            * `partial` - 漏选给部分分，错选不得分
+            * `penalty` - 漏选给部分分，错选倒扣
+          oneOf:
+          - $ref: '#/components/schemas/PolicyEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        provider:
+          type: string
+          nullable: true
+          description: 指定 AI 平台（deepseek / doubao / openai / mock）；不传用项目默认
+          maxLength: 32
+        force:
+          type: boolean
+          default: false
+          description: 已出分的作答是否允许重新判分（默认拒绝，避免覆盖人工复核结果）
+    BatchScoreRequest:
+      type: object
+      description: 批量调分。
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemRequest'
+      required:
+      - items
+    BehaviorEventRequest:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/BehaviorEventTypeEnum'
+        count:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 1
+        detail:
+          type: string
+          maxLength: 200
+      required:
+      - type
+    BehaviorEventTypeEnum:
+      enum:
+      - switch
+      - paste
+      - fullscreen_exit
+      - blur
+      - heartbeat
+      type: string
+      description: |-
+        * `switch` - 切屏/离开页面
+        * `paste` - 粘贴
+        * `fullscreen_exit` - 退出全屏
+        * `blur` - 窗口失焦
+        * `heartbeat` - 心跳
+    BehaviorReportRequest:
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/BehaviorEventRequest'
+      required:
+      - events
+    BlankEnum:
+      enum:
+      - ''
+    BlueprintItemRequest:
+      type: object
+      description: 组卷蓝图的一行：某题型几道题、每题几分。
+      properties:
+        type:
+          $ref: '#/components/schemas/Type611Enum'
+        count:
+          type: integer
+          maximum: 100
+          minimum: 1
+        score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+      required:
+      - count
+      - score
+      - type
+    ChangePasswordRequest:
+      type: object
+      properties:
+        old_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          title: 原密码
+        new_password:
+          type: string
+          writeOnly: true
+          minLength: 6
+          title: 新密码
+        confirm_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          title: 确认新密码
+      required:
+      - confirm_password
+      - new_password
+      - old_password
+    ChatMessage:
+      type: object
+      description: 单条对话消息。
+      properties:
+        role:
+          allOf:
+          - $ref: '#/components/schemas/ChatMessageRoleEnum'
+          default: user
+        content:
+          type: string
+      required:
+      - content
+    ChatMessageRequest:
+      type: object
+      description: 单条对话消息。
+      properties:
+        role:
+          allOf:
+          - $ref: '#/components/schemas/ChatMessageRoleEnum'
+          default: user
+        content:
+          type: string
+          minLength: 1
+      required:
+      - content
+    ChatMessageRoleEnum:
+      enum:
+      - system
+      - user
+      - assistant
+      type: string
+      description: |-
+        * `system` - system
+        * `user` - user
+        * `assistant` - assistant
+    ClassTypeEnum:
+      enum:
+      - admin
+      - subject
+      type: string
+      description: |-
+        * `admin` - 行政班
+        * `subject` - 学科班
+    ClassroomWriteRequest:
+      type: object
+      description: 建班 / 改班写序列化器（不绑 model，字段语义自控）。
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 64
+        grade_year:
+          type: string
+          default: ''
+          maxLength: 16
+        subject:
+          type: string
+          default: ''
+          maxLength: 64
+        description:
+          type: string
+          default: ''
+        class_type:
+          allOf:
+          - $ref: '#/components/schemas/ClassTypeEnum'
+          default: admin
+        admin_class_id:
+          type: integer
+          nullable: true
+        head_teacher_id:
+          type: integer
+          nullable: true
+        teacher_ids:
+          type: array
+          items:
+            type: integer
+      required:
+      - name
+    CloneRequest:
+      type: object
+      description: 复制试卷。
+      properties:
+        title:
+          type: string
+          maxLength: 200
+    ComposeRequestRequest:
+      type: object
+      description: |-
+        智能组卷入参。
+
+        ``dry_run=True`` 时只试算不落库，用来先给教师看「能不能组出来、大概什么难度」。
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        subject:
+          type: string
+          maxLength: 64
+        knowledge_point_ids:
+          type: array
+          items:
+            type: integer
+          description: 要覆盖的知识点（自动包含其子知识点）；不传表示全题库范围
+        blueprint:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlueprintItemRequest'
+        target_difficulty:
+          type: number
+          format: double
+          maximum: 4.0
+          minimum: 1.0
+          default: 2.0
+        duration_minutes:
+          type: integer
+          maximum: 600
+          minimum: 1
+          default: 90
+        pass_score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+        exclude_ids:
+          type: array
+          items:
+            type: integer
+          description: 要排除的题目 id（如刚考过的题）
+        seed:
+          type: integer
+          nullable: true
+          description: 随机种子；传相同值可复现同一份卷子
+        dry_run:
+          type: boolean
+          default: false
+        generate_notes:
+          type: boolean
+          default: true
+          description: 是否调用 AI 生成组卷说明
+    CustomTokenObtainPair:
+      type: object
+      description: 登录：支持用户名 / 邮箱 / 学号，并在 token 里塞入角色，前端少发一次请求。
+      properties:
+        username:
+          type: string
+          title: 账号
+          description: 用户名 / 邮箱 / 学号，三者填其一即可
+      required:
+      - username
+    CustomTokenObtainPairRequest:
+      type: object
+      description: 登录：支持用户名 / 邮箱 / 学号，并在 token 里塞入角色，前端少发一次请求。
+      properties:
+        username:
+          type: string
+          minLength: 1
+          title: 账号
+          description: 用户名 / 邮箱 / 学号，三者填其一即可
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - password
+      - username
+    DiagnosisRequestRequest:
+      type: object
+      description: |-
+        生成学情诊断的入参。
+
+        ``force=False`` 且缓存未过期时**不会重新调用大模型**——
+        这是花钱的动作，不该因为前端多刷一次页面就重复计费。
+      properties:
+        subject:
+          type: string
+          maxLength: 64
+        force:
+          type: boolean
+          default: false
+          description: 忽略缓存强制重新生成
+        provider:
+          type: string
+          description: 指定 AI 平台，留空用系统默认
+          maxLength: 32
+    DifficultyEnum:
+      enum:
+      - 1
+      - 2
+      - 3
+      - 4
+      type: integer
+      description: |-
+        * `1` - 简单
+        * `2` - 中等
+        * `3` - 困难
+        * `4` - 挑战
+    ExamAttempt:
+      type: object
+      description: 教师视角的作答记录。
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        exam_id:
+          type: integer
+          title: 考试
+          readOnly: true
+        exam_title:
+          type: string
+          readOnly: true
+        student_id:
+          type: integer
+          title: 考生
+          readOnly: true
+        student_name:
+          type: string
+          readOnly: true
+          default: ''
+        student_no:
+          type: string
+          readOnly: true
+          default: ''
+        attempt_no:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 第几次作答
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusC3fEnum'
+          title: 状态
+        status_display:
+          type: string
+          readOnly: true
+        submit_reason:
+          title: 交卷原因
+          oneOf:
+          - $ref: '#/components/schemas/SubmitReasonEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        submit_reason_display:
+          type: string
+          readOnly: true
+        is_timeout:
+          type: boolean
+          title: 是否超时
+        passed:
+          type: string
+          readOnly: true
+        started_at:
+          type: string
+          format: date-time
+          title: 开始时间
+        deadline_at:
+          type: string
+          format: date-time
+          title: 截止时间
+          description: 开始时间 + 时长，并被考试结束时间封顶
+        submitted_at:
+          type: string
+          format: date-time
+          nullable: true
+          title: 交卷时间
+        graded_at:
+          type: string
+          format: date-time
+          nullable: true
+          title: 判分时间
+        time_spent_seconds:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 实际用时（秒）
+        remaining_seconds:
+          type: integer
+          readOnly: true
+        score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          title: 得分
+        objective_score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          title: 客观题得分
+        subjective_score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          title: 主观题得分
+        total_score_snapshot:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          title: 满分快照
+        question_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 题目数量
+        answered_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 已作答数
+        progress:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        switch_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 切屏次数
+        paste_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 粘贴次数
+        fullscreen_exit_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 退出全屏次数
+        heartbeat_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 心跳次数
+        last_heartbeat_at:
+          type: string
+          format: date-time
+          nullable: true
+          title: 最后心跳
+        suspicious:
+          type: boolean
+          readOnly: true
+        ip_address:
+          type: string
+          title: IP
+          maxLength: 45
+        user_agent:
+          type: string
+          maxLength: 255
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: 创建时间
+      required:
+      - created_at
+      - deadline_at
+      - exam_id
+      - exam_title
+      - id
+      - passed
+      - progress
+      - remaining_seconds
+      - started_at
+      - status_display
+      - student_id
+      - student_name
+      - student_no
+      - submit_reason_display
+      - suspicious
+    ExamAttemptRequest:
+      type: object
+      description: 教师视角的作答记录。
+      properties:
+        attempt_no:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 第几次作答
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusC3fEnum'
+          title: 状态
+        submit_reason:
+          title: 交卷原因
+          oneOf:
+          - $ref: '#/components/schemas/SubmitReasonEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        is_timeout:
+          type: boolean
+          title: 是否超时
+        started_at:
+          type: string
+          format: date-time
+          title: 开始时间
+        deadline_at:
+          type: string
+          format: date-time
+          title: 截止时间
+          description: 开始时间 + 时长，并被考试结束时间封顶
+        submitted_at:
+          type: string
+          format: date-time
+          nullable: true
+          title: 交卷时间
+        graded_at:
+          type: string
+          format: date-time
+          nullable: true
+          title: 判分时间
+        time_spent_seconds:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 实际用时（秒）
+        score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          title: 得分
+        objective_score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          title: 客观题得分
+        subjective_score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          title: 主观题得分
+        total_score_snapshot:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          title: 满分快照
+        question_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 题目数量
+        answered_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 已作答数
+        switch_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 切屏次数
+        paste_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 粘贴次数
+        fullscreen_exit_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 退出全屏次数
+        heartbeat_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 心跳次数
+        last_heartbeat_at:
+          type: string
+          format: date-time
+          nullable: true
+          title: 最后心跳
+        ip_address:
+          type: string
+          title: IP
+          maxLength: 45
+        user_agent:
+          type: string
+          maxLength: 255
+      required:
+      - deadline_at
+      - started_at
+    ExamAttemptStudent:
+      type: object
+      description: |-
+        学生看自己的作答记录（结果页与考试列表共用）。
+
+        不含任何行为计数的阈值判定结论——学生能看到自己切了几次屏没必要隐藏
+        （前端本来就在上报），但「是否违规」的定性结论属于教师侧。
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        exam_id:
+          type: integer
+          title: 考试
+          readOnly: true
+        attempt_no:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 第几次作答
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusC3fEnum'
+          title: 状态
+        status_display:
+          type: string
+          readOnly: true
+        submit_reason_display:
+          type: string
+          readOnly: true
+        is_timeout:
+          type: boolean
+          title: 是否超时
+        passed:
+          type: string
+          readOnly: true
+        show_score:
+          type: boolean
+          description: 成绩是否已经可以对本人公开。
+          readOnly: true
+        started_at:
+          type: string
+          format: date-time
+          title: 开始时间
+        deadline_at:
+          type: string
+          format: date-time
+          title: 截止时间
+          description: 开始时间 + 时长，并被考试结束时间封顶
+        submitted_at:
+          type: string
+          format: date-time
+          nullable: true
+          title: 交卷时间
+        time_spent_seconds:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 实际用时（秒）
+        remaining_seconds:
+          type: integer
+          readOnly: true
+        score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          title: 得分
+        total_score_snapshot:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          title: 满分快照
+        question_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 题目数量
+        answered_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 已作答数
+        progress:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        can_resume:
+          type: boolean
+          readOnly: true
+        switch_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 切屏次数
+        paste_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 粘贴次数
+      required:
+      - can_resume
+      - deadline_at
+      - exam_id
+      - id
+      - passed
+      - progress
+      - remaining_seconds
+      - show_score
+      - started_at
+      - status_display
+      - submit_reason_display
+    ExamDetail:
+      type: object
+      description: 考试详情（教师）：多带一份试卷摘要与参考名单规模。
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          title: 考试名称
+          maxLength: 200
+        subject:
+          type: string
+          title: 学科/课程
+          maxLength: 64
+        description:
+          type: string
+          title: 考试说明
+          description: 考前须知，会显示在学生答题页顶部
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusA96Enum'
+          title: 状态
+        status_display:
+          type: string
+          readOnly: true
+        computed_status:
+          type: string
+          readOnly: true
+        computed_status_display:
+          type: string
+          readOnly: true
+        is_open:
+          type: boolean
+          readOnly: true
+        paper_id:
+          type: integer
+          readOnly: true
+        paper_title:
+          type: string
+          readOnly: true
+        duration_minutes:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 考试时长（分钟）
+          description: 0 表示沿用试卷时长
+        duration_minutes_effective:
+          type: integer
+          readOnly: true
+        total_score:
+          type: number
+          format: double
+          readOnly: true
+        question_count:
+          type: integer
+          readOnly: true
+        pass_score_effective:
+          type: number
+          format: double
+          readOnly: true
+        start_time:
+          type: string
+          format: date-time
+          nullable: true
+          title: 开始时间
+          description: 留空表示发布后立即可考
+        end_time:
+          type: string
+          format: date-time
+          nullable: true
+          title: 结束时间
+          description: 留空表示不限结束时间；到时后自动禁止进入
+        max_attempts:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 允许作答次数
+        multiple_choice_policy:
+          allOf:
+          - $ref: '#/components/schemas/MultipleChoicePolicyEnum'
+          title: 多选题给分策略
+          description: |-
+            严格=全对才得分；漏选部分分=错选不得分；倒扣=错选从正确项里减
+
+            * `strict` - 严格：全对才得分
+            * `partial` - 漏选给部分分，错选不得分
+            * `penalty` - 漏选给部分分，错选倒扣
+        multiple_choice_policy_display:
+          type: string
+          readOnly: true
+        shuffle_questions:
+          type: boolean
+          title: 题目乱序
+          description: 同一场考试不同学生看到的题序不同（按作答记录固定，刷新不变）
+        shuffle_options:
+          type: boolean
+          title: 选项乱序
+          description: 选择题选项顺序随机，但选项标号仍跟着内容走
+        detect_switch:
+          type: boolean
+          title: 检测切屏
+        max_switch_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 允许切屏次数
+          description: 超过该次数记违规
+        auto_submit_on_limit:
+          type: boolean
+          title: 超限自动交卷
+          description: 切屏超限时立即强制交卷；关闭则只记违规
+        detect_paste:
+          type: boolean
+          title: 检测粘贴
+        fullscreen_required:
+          type: boolean
+          title: 要求全屏
+        allow_resume:
+          type: boolean
+          title: 允许断网续考
+          description: 关闭后中途离开页面即视为本次作答作废
+        show_score_immediately:
+          type: boolean
+          title: 交卷后立即显示得分
+          description: 依赖模块五的判分结果；未判分时仅显示「已交卷」
+        open_to_all:
+          type: boolean
+          title: 面向全体学生
+        applicants:
+          type: integer
+          readOnly: true
+        attempt_total:
+          type: integer
+          readOnly: true
+        in_progress_total:
+          type: integer
+          readOnly: true
+        submitted_total:
+          type: integer
+          readOnly: true
+        created_by_name:
+          type: string
+          readOnly: true
+          default: ''
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+          title: 发布时间
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: 创建时间
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: 更新时间
+        paper:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        participant_ids:
+          type: array
+          items: {}
+          readOnly: true
+        participant_names:
+          type: array
+          items: {}
+          readOnly: true
+        created_by_id:
+          type: integer
+          nullable: true
+          title: 创建人
+          readOnly: true
+      required:
+      - applicants
+      - attempt_total
+      - computed_status
+      - computed_status_display
+      - created_at
+      - created_by_id
+      - created_by_name
+      - duration_minutes_effective
+      - id
+      - in_progress_total
+      - is_open
+      - multiple_choice_policy_display
+      - paper
+      - paper_id
+      - paper_title
+      - participant_ids
+      - participant_names
+      - pass_score_effective
+      - question_count
+      - status_display
+      - submitted_total
+      - title
+      - total_score
+      - updated_at
+    ExamStatusChangeRequest:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/StatusA96Enum'
+      required:
+      - status
+    ExamStudent:
+      type: object
+      description: |-
+        学生视角的考试概要。
+
+        **刻意不含试卷内容**：学生还没点「开始考试」时，连题型分布都不该知道。
+        这里只回答三个问题——什么时候考、能不能考、我考到哪一步了。
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          title: 考试名称
+          maxLength: 200
+        subject:
+          type: string
+          title: 学科/课程
+          maxLength: 64
+        description:
+          type: string
+          title: 考试说明
+          description: 考前须知，会显示在学生答题页顶部
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusA96Enum'
+          title: 状态
+        status_display:
+          type: string
+          readOnly: true
+        computed_status:
+          type: string
+          readOnly: true
+        computed_status_display:
+          type: string
+          readOnly: true
+        duration_minutes_effective:
+          type: integer
+          readOnly: true
+        total_score:
+          type: number
+          format: double
+          readOnly: true
+        question_count:
+          type: integer
+          readOnly: true
+        pass_score_effective:
+          type: number
+          format: double
+          readOnly: true
+        start_time:
+          type: string
+          format: date-time
+          nullable: true
+          title: 开始时间
+          description: 留空表示发布后立即可考
+        end_time:
+          type: string
+          format: date-time
+          nullable: true
+          title: 结束时间
+          description: 留空表示不限结束时间；到时后自动禁止进入
+        max_attempts:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 允许作答次数
+        allow_resume:
+          type: boolean
+          title: 允许断网续考
+          description: 关闭后中途离开页面即视为本次作答作废
+        show_score_immediately:
+          type: boolean
+          title: 交卷后立即显示得分
+          description: 依赖模块五的判分结果；未判分时仅显示「已交卷」
+        can_start:
+          type: boolean
+          readOnly: true
+        locked_reason:
+          type: string
+          description: 不能开始的原因——直接告诉学生，别让他干点按钮。
+          readOnly: true
+        attempts_used:
+          type: integer
+          readOnly: true
+        attempts_left:
+          type: integer
+          readOnly: true
+        my_attempt:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+      required:
+      - attempts_left
+      - attempts_used
+      - can_start
+      - computed_status
+      - computed_status_display
+      - duration_minutes_effective
+      - id
+      - locked_reason
+      - my_attempt
+      - pass_score_effective
+      - question_count
+      - status_display
+      - title
+      - total_score
+    ExamWrite:
+      type: object
+      description: 新建 / 修改考试（入参）。
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        subject:
+          type: string
+          maxLength: 64
+        paper_id:
+          type: integer
+        start_time:
+          type: string
+          format: date-time
+          nullable: true
+        end_time:
+          type: string
+          format: date-time
+          nullable: true
+        duration_minutes:
+          type: integer
+          maximum: 600
+          minimum: 0
+        pass_score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          nullable: true
+        max_attempts:
+          type: integer
+          maximum: 10
+          minimum: 1
+        multiple_choice_policy:
+          allOf:
+          - $ref: '#/components/schemas/MultipleChoicePolicyEnum'
+          description: |-
+            多选题给分策略，判分时生效（模块五）
+
+            * `strict` - 严格：全对才得分
+            * `partial` - 漏选给部分分，错选不得分
+            * `penalty` - 漏选给部分分，错选倒扣
+        shuffle_questions:
+          type: boolean
+        shuffle_options:
+          type: boolean
+        detect_switch:
+          type: boolean
+        max_switch_count:
+          type: integer
+          maximum: 999
+          minimum: 0
+        auto_submit_on_limit:
+          type: boolean
+        detect_paste:
+          type: boolean
+        fullscreen_required:
+          type: boolean
+        allow_resume:
+          type: boolean
+        show_score_immediately:
+          type: boolean
+        open_to_all:
+          type: boolean
+        participant_ids:
+          type: array
+          items:
+            type: integer
+          description: 指定考生 id；传了非空列表会自动把 open_to_all 置为 False
+    ExamWriteRequest:
+      type: object
+      description: 新建 / 修改考试（入参）。
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        subject:
+          type: string
+          maxLength: 64
+        paper_id:
+          type: integer
+        start_time:
+          type: string
+          format: date-time
+          nullable: true
+        end_time:
+          type: string
+          format: date-time
+          nullable: true
+        duration_minutes:
+          type: integer
+          maximum: 600
+          minimum: 0
+        pass_score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          nullable: true
+        max_attempts:
+          type: integer
+          maximum: 10
+          minimum: 1
+        multiple_choice_policy:
+          allOf:
+          - $ref: '#/components/schemas/MultipleChoicePolicyEnum'
+          description: |-
+            多选题给分策略，判分时生效（模块五）
+
+            * `strict` - 严格：全对才得分
+            * `partial` - 漏选给部分分，错选不得分
+            * `penalty` - 漏选给部分分，错选倒扣
+        shuffle_questions:
+          type: boolean
+        shuffle_options:
+          type: boolean
+        detect_switch:
+          type: boolean
+        max_switch_count:
+          type: integer
+          maximum: 999
+          minimum: 0
+        auto_submit_on_limit:
+          type: boolean
+        detect_paste:
+          type: boolean
+        fullscreen_required:
+          type: boolean
+        allow_resume:
+          type: boolean
+        show_score_immediately:
+          type: boolean
+        open_to_all:
+          type: boolean
+        participant_ids:
+          type: array
+          items:
+            type: integer
+          description: 指定考生 id；传了非空列表会自动把 open_to_all 置为 False
+    ExplainPaperRequest:
+      type: object
+      description: 生成 / 重新生成组卷说明。
+      properties:
+        provider:
+          type: string
+          maxLength: 32
+        force:
+          type: boolean
+          default: false
+          description: 已有说明时是否覆盖重写
+    GenerationModeEnum:
+      enum:
+      - manual
+      - ai
+      - random
+      - hybrid
+      type: string
+      description: |-
+        * `manual` - 手动组卷
+        * `ai` - AI 智能组卷
+        * `random` - 随机组卷
+        * `hybrid` - AI + 手动调整
+    GradingFeedback:
+      type: object
+      description: 复核记录。
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        answer_id:
+          type: integer
+          title: 作答明细
+          readOnly: true
+        attempt_id:
+          type: integer
+          title: 作答记录
+          readOnly: true
+        exam_title:
+          type: string
+          readOnly: true
+          default: ''
+        student_name:
+          type: string
+          readOnly: true
+          default: ''
+        reviewer_id:
+          type: integer
+          nullable: true
+          title: 复核人
+          readOnly: true
+        reviewer_name:
+          type: string
+          readOnly: true
+          default: ''
+        question_type:
+          type: string
+          title: 题型（快照）
+          maxLength: 16
+        source:
+          allOf:
+          - $ref: '#/components/schemas/GradingFeedbackSourceEnum'
+          title: 原评分依据
+          description: |-
+            复核之前这个分数是谁给的
+
+            * `auto` - 客观题自动判分
+            * `ai` - AI 批改建议
+            * `none` - 原无评分，教师直接给分
+        source_display:
+          type: string
+          readOnly: true
+        action:
+          allOf:
+          - $ref: '#/components/schemas/ActionEnum'
+          title: 处置方式
+        action_display:
+          type: string
+          readOnly: true
+        ai_score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          nullable: true
+          title: AI 建议分（快照）
+        ai_ratio:
+          type: number
+          format: double
+          nullable: true
+          title: AI 得分比例（快照）
+        original_score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          title: 复核前分数（快照）
+        final_score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          title: 复核后分数
+        delta:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          title: 本次调整量
+          description: final_score - original_score，正数表示上调
+        ai_delta:
+          type: string
+          readOnly: true
+        full_score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          title: 本题满分（快照）
+        comment:
+          type: string
+          title: 教师评语
+        stem:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: 创建时间
+      required:
+      - action_display
+      - ai_delta
+      - answer_id
+      - attempt_id
+      - created_at
+      - exam_title
+      - id
+      - reviewer_id
+      - reviewer_name
+      - source_display
+      - stem
+      - student_name
+    GradingFeedbackSourceEnum:
+      enum:
+      - auto
+      - ai
+      - none
+      type: string
+      description: |-
+        * `auto` - 客观题自动判分
+        * `ai` - AI 批改建议
+        * `none` - 原无评分，教师直接给分
+    HeartbeatRequest:
+      type: object
+      properties:
+        client_remaining:
+          type: integer
+          maximum: 172800
+          minimum: 0
+    ItemRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+      required:
+      - id
+      - score
+    KnowledgePoint:
+      type: object
+      description: 知识点基础信息。
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          title: 名称
+          maxLength: 64
+        code:
+          type: string
+          title: 编号
+          description: 如 CS-DS-01，便于导入导出时对齐
+          maxLength: 64
+        parent:
+          type: integer
+          nullable: true
+          title: 上级知识点
+        parent_name:
+          type: string
+          readOnly: true
+          default: ''
+        subject:
+          type: string
+          default: ''
+          title: 所属学科/课程
+          maxLength: 64
+        description:
+          type: string
+          title: 描述
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          title: 同级排序
+          description: 数字越小越靠前
+        is_active:
+          type: boolean
+          title: 启用
+        full_path:
+          type: string
+          readOnly: true
+        level:
+          type: integer
+          readOnly: true
+        question_count:
+          type: integer
+          readOnly: true
+        children_count:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: 创建时间
+      required:
+      - children_count
+      - created_at
+      - full_path
+      - id
+      - level
+      - name
+      - parent_name
+      - question_count
+    KnowledgePointRequest:
+      type: object
+      description: 知识点基础信息。
+      properties:
+        name:
+          type: string
+          minLength: 1
+          title: 名称
+          maxLength: 64
+        code:
+          type: string
+          title: 编号
+          description: 如 CS-DS-01，便于导入导出时对齐
+          maxLength: 64
+        parent:
+          type: integer
+          nullable: true
+          title: 上级知识点
+        subject:
+          type: string
+          default: ''
+          title: 所属学科/课程
+          maxLength: 64
+        description:
+          type: string
+          title: 描述
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          title: 同级排序
+          description: 数字越小越靠前
+        is_active:
+          type: boolean
+          title: 启用
+      required:
+      - name
+    Logout:
+      type: object
+      description: 登出：把 refresh token 加入黑名单。
+      properties:
+        refresh:
+          type: string
+          title: refresh token
+      required:
+      - refresh
+    LogoutRequest:
+      type: object
+      description: 登出：把 refresh token 加入黑名单。
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+          title: refresh token
+      required:
+      - refresh
+    MultipleChoicePolicyEnum:
+      enum:
+      - strict
+      - partial
+      - penalty
+      type: string
+      description: |-
+        * `strict` - 严格：全对才得分
+        * `partial` - 漏选给部分分，错选不得分
+        * `penalty` - 漏选给部分分，错选倒扣
+    NullEnum:
+      enum:
+      - null
+    PaginatedExamAttemptStudentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExamAttemptStudent'
+    PaginatedExamStudentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExamStudent'
+    PaginatedGradingFeedbackList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/GradingFeedback'
+    PaginatedKnowledgePointList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/KnowledgePoint'
+    PaginatedPaperListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaperList'
+    PaginatedQuestionListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionList'
+    PaginatedUserList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    PaperDetail:
+      type: object
+      description: 详情：卷头 + 大题 + 全部题目 + 组卷说明。
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          title: 试卷标题
+          maxLength: 200
+        subject:
+          type: string
+          title: 学科/课程
+          maxLength: 64
+        status:
+          allOf:
+          - $ref: '#/components/schemas/Status158Enum'
+          title: 状态
+        status_display:
+          type: string
+          readOnly: true
+        generation_mode:
+          allOf:
+          - $ref: '#/components/schemas/GenerationModeEnum'
+          title: 组卷方式
+        generation_mode_display:
+          type: string
+          readOnly: true
+        duration_minutes:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 考试时长（分钟）
+        total_score:
+          type: number
+          format: double
+          readOnly: true
+        pass_score:
+          type: number
+          format: double
+          readOnly: true
+        question_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 题目数量
+        target_difficulty:
+          type: number
+          format: double
+          readOnly: true
+        actual_difficulty:
+          type: number
+          format: double
+          readOnly: true
+        section_count:
+          type: integer
+          readOnly: true
+        created_by_name:
+          type: string
+          readOnly: true
+          default: ''
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+          title: 发布时间
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: 创建时间
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: 更新时间
+        description:
+          type: string
+          title: 说明
+          description: 试卷说明，会印在卷首
+        sections:
+          type: array
+          items: {}
+          readOnly: true
+        paper_questions:
+          type: array
+          items: {}
+          readOnly: true
+        ai_notes:
+          type: string
+          title: 组卷说明（AI）
+        ai_provider:
+          type: string
+          title: AI 平台
+          maxLength: 32
+        ai_model:
+          type: string
+          title: AI 模型
+          maxLength: 64
+      required:
+      - actual_difficulty
+      - created_at
+      - created_by_name
+      - generation_mode_display
+      - id
+      - paper_questions
+      - pass_score
+      - section_count
+      - sections
+      - status_display
+      - target_difficulty
+      - title
+      - total_score
+      - updated_at
+    PaperList:
+      type: object
+      description: 列表用：只给汇总，不带题目内容（列表页秒开的关键）。
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          title: 试卷标题
+          maxLength: 200
+        subject:
+          type: string
+          title: 学科/课程
+          maxLength: 64
+        status:
+          allOf:
+          - $ref: '#/components/schemas/Status158Enum'
+          title: 状态
+        status_display:
+          type: string
+          readOnly: true
+        generation_mode:
+          allOf:
+          - $ref: '#/components/schemas/GenerationModeEnum'
+          title: 组卷方式
+        generation_mode_display:
+          type: string
+          readOnly: true
+        duration_minutes:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 考试时长（分钟）
+        total_score:
+          type: number
+          format: double
+          readOnly: true
+        pass_score:
+          type: number
+          format: double
+          readOnly: true
+        question_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 题目数量
+        target_difficulty:
+          type: number
+          format: double
+          readOnly: true
+        actual_difficulty:
+          type: number
+          format: double
+          readOnly: true
+        section_count:
+          type: integer
+          readOnly: true
+        created_by_name:
+          type: string
+          readOnly: true
+          default: ''
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+          title: 发布时间
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: 创建时间
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: 更新时间
+      required:
+      - actual_difficulty
+      - created_at
+      - created_by_name
+      - generation_mode_display
+      - id
+      - pass_score
+      - section_count
+      - status_display
+      - target_difficulty
+      - title
+      - total_score
+      - updated_at
+    PaperWrite:
+      type: object
+      description: |-
+        新建 / 修改卷头。
+
+        ``question_ids`` 只在新建时有意义（建完顺手塞题）；改卷头时忽略它，
+        加题走专门的接口，避免一次请求里混着两件事。
+      properties:
+        title:
+          type: string
+          title: 试卷标题
+          maxLength: 200
+        subject:
+          type: string
+          title: 学科/课程
+          maxLength: 64
+        description:
+          type: string
+          title: 说明
+          description: 试卷说明，会印在卷首
+        duration_minutes:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 考试时长（分钟）
+        pass_score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          title: 及格分
+        target_difficulty:
+          type: number
+          format: double
+          title: 目标难度系数
+          description: 1=简单 2=中等 3=困难 4=挑战；组卷后用来比对实际难度
+      required:
+      - title
+    PaperWriteRequest:
+      type: object
+      description: |-
+        新建 / 修改卷头。
+
+        ``question_ids`` 只在新建时有意义（建完顺手塞题）；改卷头时忽略它，
+        加题走专门的接口，避免一次请求里混着两件事。
+      properties:
+        title:
+          type: string
+          minLength: 1
+          title: 试卷标题
+          maxLength: 200
+        subject:
+          type: string
+          title: 学科/课程
+          maxLength: 64
+        description:
+          type: string
+          title: 说明
+          description: 试卷说明，会印在卷首
+        duration_minutes:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 考试时长（分钟）
+        pass_score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          title: 及格分
+        target_difficulty:
+          type: number
+          format: double
+          title: 目标难度系数
+          description: 1=简单 2=中等 3=困难 4=挑战；组卷后用来比对实际难度
+        question_ids:
+          type: array
+          items:
+            type: integer
+          writeOnly: true
+      required:
+      - title
+    PatchedAdminUserRequest:
+      type: object
+      description: |-
+        管理员操作用户的序列化器：可以改角色、学科与启用状态。
+
+        ``subject``（任教学科）由管理端维护（U-1）：教师账号可绑定学科，
+        候选人列表来自 ``overview.options.subjects``，但字段本身是自由文本（Q-4）。
+      properties:
+        username:
+          type: string
+          minLength: 1
+          title: 用户名
+          description: 必填；长度为150个字符或以下；只能包含字母、数字、特殊字符“@”、“.”、“-”和“_”。
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          minLength: 1
+          title: 邮箱
+          maxLength: 254
+        real_name:
+          type: string
+          title: 真实姓名
+          maxLength: 32
+        role:
+          allOf:
+          - $ref: '#/components/schemas/Role273Enum'
+          title: 角色
+        phone:
+          type: string
+          title: 手机号
+          maxLength: 20
+        student_no:
+          type: string
+          title: 学号 / 工号
+          description: 学生填学号，教师填工号；唯一性在序列化器里校验
+          maxLength: 32
+        school:
+          type: string
+          title: 学校 / 院系
+          maxLength: 64
+        subject:
+          type: string
+          title: 任教学科
+          description: 教师专属：只管理该学科的资源（题库/试卷/考试）；留空表示不限学科
+          maxLength: 64
+        avatar:
+          type: string
+          format: binary
+          nullable: true
+          title: 头像
+        is_active:
+          type: boolean
+          title: 有效
+          description: 指明用户是否被认为是活跃的。以反选代替删除帐号。
+    PatchedClassroomWriteRequest:
+      type: object
+      description: 建班 / 改班写序列化器（不绑 model，字段语义自控）。
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 64
+        grade_year:
+          type: string
+          default: ''
+          maxLength: 16
+        subject:
+          type: string
+          default: ''
+          maxLength: 64
+        description:
+          type: string
+          default: ''
+        class_type:
+          allOf:
+          - $ref: '#/components/schemas/ClassTypeEnum'
+          default: admin
+        admin_class_id:
+          type: integer
+          nullable: true
+        head_teacher_id:
+          type: integer
+          nullable: true
+        teacher_ids:
+          type: array
+          items:
+            type: integer
+    PatchedExamWriteRequest:
+      type: object
+      description: 新建 / 修改考试（入参）。
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        subject:
+          type: string
+          maxLength: 64
+        paper_id:
+          type: integer
+        start_time:
+          type: string
+          format: date-time
+          nullable: true
+        end_time:
+          type: string
+          format: date-time
+          nullable: true
+        duration_minutes:
+          type: integer
+          maximum: 600
+          minimum: 0
+        pass_score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          nullable: true
+        max_attempts:
+          type: integer
+          maximum: 10
+          minimum: 1
+        multiple_choice_policy:
+          allOf:
+          - $ref: '#/components/schemas/MultipleChoicePolicyEnum'
+          description: |-
+            多选题给分策略，判分时生效（模块五）
+
+            * `strict` - 严格：全对才得分
+            * `partial` - 漏选给部分分，错选不得分
+            * `penalty` - 漏选给部分分，错选倒扣
+        shuffle_questions:
+          type: boolean
+        shuffle_options:
+          type: boolean
+        detect_switch:
+          type: boolean
+        max_switch_count:
+          type: integer
+          maximum: 999
+          minimum: 0
+        auto_submit_on_limit:
+          type: boolean
+        detect_paste:
+          type: boolean
+        fullscreen_required:
+          type: boolean
+        allow_resume:
+          type: boolean
+        show_score_immediately:
+          type: boolean
+        open_to_all:
+          type: boolean
+        participant_ids:
+          type: array
+          items:
+            type: integer
+          description: 指定考生 id；传了非空列表会自动把 open_to_all 置为 False
+    PatchedKnowledgePointRequest:
+      type: object
+      description: 知识点基础信息。
+      properties:
+        name:
+          type: string
+          minLength: 1
+          title: 名称
+          maxLength: 64
+        code:
+          type: string
+          title: 编号
+          description: 如 CS-DS-01，便于导入导出时对齐
+          maxLength: 64
+        parent:
+          type: integer
+          nullable: true
+          title: 上级知识点
+        subject:
+          type: string
+          default: ''
+          title: 所属学科/课程
+          maxLength: 64
+        description:
+          type: string
+          title: 描述
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          title: 同级排序
+          description: 数字越小越靠前
+        is_active:
+          type: boolean
+          title: 启用
+    PatchedPaperWriteRequest:
+      type: object
+      description: |-
+        新建 / 修改卷头。
+
+        ``question_ids`` 只在新建时有意义（建完顺手塞题）；改卷头时忽略它，
+        加题走专门的接口，避免一次请求里混着两件事。
+      properties:
+        title:
+          type: string
+          minLength: 1
+          title: 试卷标题
+          maxLength: 200
+        subject:
+          type: string
+          title: 学科/课程
+          maxLength: 64
+        description:
+          type: string
+          title: 说明
+          description: 试卷说明，会印在卷首
+        duration_minutes:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 考试时长（分钟）
+        pass_score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          title: 及格分
+        target_difficulty:
+          type: number
+          format: double
+          title: 目标难度系数
+          description: 1=简单 2=中等 3=困难 4=挑战；组卷后用来比对实际难度
+        question_ids:
+          type: array
+          items:
+            type: integer
+          writeOnly: true
+    PatchedQuestionWriteRequest:
+      type: object
+      description: |-
+        新建 / 更新题目。
+
+        选项与知识点的落库逻辑交给 ``QuestionService``，这里只负责字段级校验。
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/Type611Enum'
+          title: 题型
+        stem:
+          type: string
+          minLength: 1
+          title: 题干
+        difficulty:
+          allOf:
+          - $ref: '#/components/schemas/DifficultyEnum'
+          title: 难度
+          minimum: 0
+          maximum: 65535
+        score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          title: 默认分值
+        reference_answer:
+          type: string
+          title: 参考答案
+        analysis:
+          type: string
+          title: 解析
+        subject:
+          type: string
+          title: 学科/课程
+          maxLength: 64
+        knowledge_point_ids:
+          type: array
+          items:
+            type: integer
+          writeOnly: true
+          description: 已存在的知识点 id 列表
+        knowledge_point_names:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          writeOnly: true
+          description: 知识点名称列表，不存在的会自动创建为该学科下的根知识点
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionOptionInputRequest'
+          writeOnly: true
+        is_active:
+          type: boolean
+          title: 启用
+        is_reviewed:
+          type: boolean
+          title: 已审核
+          description: AI 生成的题目建议教师审核后再使用
+        source:
+          allOf:
+          - $ref: '#/components/schemas/Source8adEnum'
+          title: 来源
+    PatchedUserUpdateRequest:
+      type: object
+      description: |-
+        用户自助修改资料（不允许改角色、用户名、学号/工号）。
+
+        学号 / 工号由系统派发，是身份标识，自助修改意味着可以冒用别人的号。
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          title: 邮箱
+          maxLength: 254
+        real_name:
+          type: string
+          title: 真实姓名
+          maxLength: 32
+        phone:
+          type: string
+          title: 手机号
+          maxLength: 20
+        school:
+          type: string
+          title: 学校 / 院系
+          maxLength: 64
+        avatar:
+          type: string
+          format: binary
+          nullable: true
+          title: 头像
+    PolicyEnum:
+      enum:
+      - strict
+      - partial
+      - penalty
+      type: string
+      description: |-
+        * `strict` - 严格：全对才得分
+        * `partial` - 漏选给部分分，错选不得分
+        * `penalty` - 漏选给部分分，错选倒扣
+    PracticeReasonRequest:
+      type: object
+      description: |-
+        生成 AI 推荐理由的入参。
+
+        ``provider`` 留空用系统默认；显式传 ``mock`` 可以在不联网、不花钱的前提下
+        预览「AI 改写后」的样子。
+      properties:
+        subject:
+          type: string
+          description: 按学科过滤，留空表示全部学科
+          maxLength: 64
+        size:
+          type: integer
+          maximum: 20
+          minimum: 1
+          description: 推荐题数，默认 6，最大 20
+        offset:
+          type: integer
+          minimum: 0
+          description: 从第几条开始取（「换一批」就是调大 offset）
+        provider:
+          type: string
+          description: 指定 AI 平台，留空用系统默认
+          maxLength: 32
+    QuestionBatchCreateRequest:
+      type: object
+      description: 批量入库入参。
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionDraftRequest'
+        subject:
+          type: string
+          default: ''
+        source:
+          allOf:
+          - $ref: '#/components/schemas/Source8adEnum'
+          default: ai
+        is_reviewed:
+          type: boolean
+          default: true
+      required:
+      - items
+    QuestionDetail:
+      type: object
+      description: 详情（教师视角，含答案与解析）。
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        type:
+          allOf:
+          - $ref: '#/components/schemas/Type611Enum'
+          title: 题型
+        type_display:
+          type: string
+          readOnly: true
+        stem:
+          type: string
+          title: 题干
+        difficulty:
+          allOf:
+          - $ref: '#/components/schemas/DifficultyEnum'
+          title: 难度
+          minimum: 0
+          maximum: 65535
+        difficulty_display:
+          type: string
+          readOnly: true
+        score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          title: 默认分值
+        subject:
+          type: string
+          title: 学科/课程
+          maxLength: 64
+        source:
+          allOf:
+          - $ref: '#/components/schemas/Source8adEnum'
+          title: 来源
+        source_display:
+          type: string
+          readOnly: true
+        is_active:
+          type: boolean
+          title: 启用
+        is_reviewed:
+          type: boolean
+          title: 已审核
+          description: AI 生成的题目建议教师审核后再使用
+        knowledge_points:
+          type: array
+          items: {}
+          readOnly: true
+        option_count:
+          type: integer
+          readOnly: true
+        usage_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 被作答次数
+        correct_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 答对次数
+        accuracy:
+          type: number
+          format: double
+          readOnly: true
+        created_by_name:
+          type: string
+          readOnly: true
+          default: ''
+        ai_provider:
+          type: string
+          title: AI 平台
+          maxLength: 32
+        ai_model:
+          type: string
+          title: AI 模型
+          maxLength: 64
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: 创建时间
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: 更新时间
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionOption'
+          readOnly: true
+        reference_answer:
+          type: string
+          title: 参考答案
+        analysis:
+          type: string
+          title: 解析
+      required:
+      - accuracy
+      - created_at
+      - created_by_name
+      - difficulty_display
+      - id
+      - knowledge_points
+      - option_count
+      - options
+      - source_display
+      - stem
+      - type
+      - type_display
+      - updated_at
+    QuestionDetailRequest:
+      type: object
+      description: 详情（教师视角，含答案与解析）。
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/Type611Enum'
+          title: 题型
+        stem:
+          type: string
+          minLength: 1
+          title: 题干
+        difficulty:
+          allOf:
+          - $ref: '#/components/schemas/DifficultyEnum'
+          title: 难度
+          minimum: 0
+          maximum: 65535
+        score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          title: 默认分值
+        subject:
+          type: string
+          title: 学科/课程
+          maxLength: 64
+        source:
+          allOf:
+          - $ref: '#/components/schemas/Source8adEnum'
+          title: 来源
+        is_active:
+          type: boolean
+          title: 启用
+        is_reviewed:
+          type: boolean
+          title: 已审核
+          description: AI 生成的题目建议教师审核后再使用
+        usage_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 被作答次数
+        correct_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 答对次数
+        ai_provider:
+          type: string
+          title: AI 平台
+          maxLength: 32
+        ai_model:
+          type: string
+          title: AI 模型
+          maxLength: 64
+        reference_answer:
+          type: string
+          title: 参考答案
+        analysis:
+          type: string
+          title: 解析
+      required:
+      - stem
+      - type
+    QuestionDraftRequest:
+      type: object
+      description: AI 生成草稿的入参（教师确认后批量入库）。
+      properties:
+        type:
+          $ref: '#/components/schemas/Type611Enum'
+        stem:
+          type: string
+          minLength: 1
+        difficulty:
+          allOf:
+          - $ref: '#/components/schemas/DifficultyEnum'
+          default: 2
+        score:
+          type: number
+          format: double
+          nullable: true
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionOptionInputRequest'
+        reference_answer:
+          type: string
+          default: ''
+        analysis:
+          type: string
+          default: ''
+        knowledge_point_names:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        knowledge_point_ids:
+          type: array
+          items:
+            type: integer
+      required:
+      - stem
+      - type
+    QuestionList:
+      type: object
+      description: 列表用的轻量序列化器（不含选项明细，避免列表接口过大）。
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        type:
+          allOf:
+          - $ref: '#/components/schemas/Type611Enum'
+          title: 题型
+        type_display:
+          type: string
+          readOnly: true
+        stem:
+          type: string
+          title: 题干
+        difficulty:
+          allOf:
+          - $ref: '#/components/schemas/DifficultyEnum'
+          title: 难度
+          minimum: 0
+          maximum: 65535
+        difficulty_display:
+          type: string
+          readOnly: true
+        score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          title: 默认分值
+        subject:
+          type: string
+          title: 学科/课程
+          maxLength: 64
+        source:
+          allOf:
+          - $ref: '#/components/schemas/Source8adEnum'
+          title: 来源
+        source_display:
+          type: string
+          readOnly: true
+        is_active:
+          type: boolean
+          title: 启用
+        is_reviewed:
+          type: boolean
+          title: 已审核
+          description: AI 生成的题目建议教师审核后再使用
+        knowledge_points:
+          type: array
+          items: {}
+          readOnly: true
+        option_count:
+          type: integer
+          readOnly: true
+        usage_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 被作答次数
+        correct_count:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+          title: 答对次数
+        accuracy:
+          type: number
+          format: double
+          readOnly: true
+        created_by_name:
+          type: string
+          readOnly: true
+          default: ''
+        ai_provider:
+          type: string
+          title: AI 平台
+          maxLength: 32
+        ai_model:
+          type: string
+          title: AI 模型
+          maxLength: 64
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: 创建时间
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: 更新时间
+      required:
+      - accuracy
+      - created_at
+      - created_by_name
+      - difficulty_display
+      - id
+      - knowledge_points
+      - option_count
+      - source_display
+      - stem
+      - type
+      - type_display
+      - updated_at
+    QuestionOption:
+      type: object
+      description: 选项（教师视角，含正确答案标记）。
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        label:
+          type: string
+          title: 选项标号
+          description: A / B / C / D ...
+          maxLength: 4
+        content:
+          type: string
+          title: 选项内容
+        is_correct:
+          type: boolean
+          title: 是否正确答案
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          title: 排序
+      required:
+      - content
+      - id
+      - label
+    QuestionOptionInput:
+      type: object
+      description: 新建/更新题目时传入的选项。
+      properties:
+        label:
+          type: string
+          maxLength: 4
+        content:
+          type: string
+        is_correct:
+          type: boolean
+          default: false
+        order:
+          type: integer
+      required:
+      - content
+    QuestionOptionInputRequest:
+      type: object
+      description: 新建/更新题目时传入的选项。
+      properties:
+        label:
+          type: string
+          maxLength: 4
+        content:
+          type: string
+          minLength: 1
+        is_correct:
+          type: boolean
+          default: false
+        order:
+          type: integer
+      required:
+      - content
+    QuestionOptionRequest:
+      type: object
+      description: 选项（教师视角，含正确答案标记）。
+      properties:
+        label:
+          type: string
+          minLength: 1
+          title: 选项标号
+          description: A / B / C / D ...
+          maxLength: 4
+        content:
+          type: string
+          minLength: 1
+          title: 选项内容
+        is_correct:
+          type: boolean
+          title: 是否正确答案
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          title: 排序
+      required:
+      - content
+      - label
+    QuestionTypesEnum:
+      enum:
+      - single
+      - multiple
+      - judge
+      - fill
+      - short
+      - essay
+      type: string
+      description: |-
+        * `single` - 单选题
+        * `multiple` - 多选题
+        * `judge` - 判断题
+        * `fill` - 填空题
+        * `short` - 简答题
+        * `essay` - 论述题
+    QuestionWrite:
+      type: object
+      description: |-
+        新建 / 更新题目。
+
+        选项与知识点的落库逻辑交给 ``QuestionService``，这里只负责字段级校验。
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/Type611Enum'
+          title: 题型
+        stem:
+          type: string
+          title: 题干
+        difficulty:
+          allOf:
+          - $ref: '#/components/schemas/DifficultyEnum'
+          title: 难度
+          minimum: 0
+          maximum: 65535
+        score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          title: 默认分值
+        reference_answer:
+          type: string
+          title: 参考答案
+        analysis:
+          type: string
+          title: 解析
+        subject:
+          type: string
+          title: 学科/课程
+          maxLength: 64
+        is_active:
+          type: boolean
+          title: 启用
+        is_reviewed:
+          type: boolean
+          title: 已审核
+          description: AI 生成的题目建议教师审核后再使用
+        source:
+          allOf:
+          - $ref: '#/components/schemas/Source8adEnum'
+          title: 来源
+      required:
+      - stem
+      - type
+    QuestionWriteRequest:
+      type: object
+      description: |-
+        新建 / 更新题目。
+
+        选项与知识点的落库逻辑交给 ``QuestionService``，这里只负责字段级校验。
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/Type611Enum'
+          title: 题型
+        stem:
+          type: string
+          minLength: 1
+          title: 题干
+        difficulty:
+          allOf:
+          - $ref: '#/components/schemas/DifficultyEnum'
+          title: 难度
+          minimum: 0
+          maximum: 65535
+        score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          title: 默认分值
+        reference_answer:
+          type: string
+          title: 参考答案
+        analysis:
+          type: string
+          title: 解析
+        subject:
+          type: string
+          title: 学科/课程
+          maxLength: 64
+        knowledge_point_ids:
+          type: array
+          items:
+            type: integer
+          writeOnly: true
+          description: 已存在的知识点 id 列表
+        knowledge_point_names:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          writeOnly: true
+          description: 知识点名称列表，不存在的会自动创建为该学科下的根知识点
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionOptionInputRequest'
+          writeOnly: true
+        is_active:
+          type: boolean
+          title: 启用
+        is_reviewed:
+          type: boolean
+          title: 已审核
+          description: AI 生成的题目建议教师审核后再使用
+        source:
+          allOf:
+          - $ref: '#/components/schemas/Source8adEnum'
+          title: 来源
+      required:
+      - stem
+      - type
+    RandomComposeRequestRequest:
+      type: object
+      description: 随机组卷入参：只选知识点 + 题量，蓝图由系统按题库库存自动生成，不调 AI。
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        subject:
+          type: string
+          maxLength: 64
+        knowledge_point_ids:
+          type: array
+          items:
+            type: integer
+          description: 要覆盖的知识点（自动包含其子知识点）；不传表示全题库范围
+        total_count:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 20
+          description: 期望题量；蓝图会按题库库存自动分配题型，实际可能因库存不足而少于该值
+        target_difficulty:
+          type: number
+          format: double
+          maximum: 4.0
+          minimum: 1.0
+          default: 2.0
+        duration_minutes:
+          type: integer
+          maximum: 600
+          minimum: 1
+          default: 90
+        pass_score:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+        exclude_ids:
+          type: array
+          items:
+            type: integer
+          description: 要排除的题目 id（如刚考过的题）
+        seed:
+          type: integer
+          nullable: true
+          description: 随机种子；传相同值可复现同一份卷子
+        dry_run:
+          type: boolean
+          default: false
+    ReasonEnum:
+      enum:
+      - manual
+      - timeout
+      - forced
+      - system
+      type: string
+      description: |-
+        * `manual` - 学生主动交卷
+        * `timeout` - 超时自动交卷
+        * `forced` - 违规强制交卷
+        * `system` - 系统代交
+    RemoveQuestionsRequest:
+      type: object
+      description: |-
+        把题目移出试卷。
+
+        传的是 ``paper_question.id``（卷内条目 id）而**不是** ``question.id``：
+        同一道题理论上可以出现在不同卷子里，按卷内条目定位才不会误删别的卷子。
+      properties:
+        ids:
+          type: array
+          items:
+            type: integer
+          description: 卷内题目条目 id（PaperQuestion.id）
+          minItems: 1
+      required:
+      - ids
+    ReorderRequest:
+      type: object
+      description: 调整题目顺序。
+      properties:
+        ordered_ids:
+          type: array
+          items:
+            type: integer
+          minItems: 1
+      required:
+      - ordered_ids
+    Role273Enum:
+      enum:
+      - admin
+      - teacher
+      - student
+      type: string
+      description: |-
+        * `admin` - 管理员
+        * `teacher` - 教师
+        * `student` - 学生
+    SaveAnswerRequest:
+      type: object
+      description: 单题暂存（和批量共用一个结构，少定义一份契约）。
+      properties:
+        paper_question_id:
+          type: integer
+        selected_labels:
+          type: string
+          maxLength: 32
+        answer_text:
+          type: string
+        is_flagged:
+          type: boolean
+        time_spent_seconds:
+          type: integer
+          maximum: 86400
+          minimum: 0
+      required:
+      - paper_question_id
+    Source8adEnum:
+      enum:
+      - manual
+      - ai
+      - import
+      type: string
+      description: |-
+        * `manual` - 手动录入
+        * `ai` - AI 生成
+        * `import` - 批量导入
+    StartExamRequest:
+      type: object
+      description: 开考。目前没有必填参数，留出结构以便将来加「确认考前须知」等开关。
+      properties:
+        confirm:
+          type: boolean
+          default: true
+    Status158Enum:
+      enum:
+      - draft
+      - published
+      - archived
+      type: string
+      description: |-
+        * `draft` - 草稿
+        * `published` - 已发布
+        * `archived` - 已归档
+    StatusA96Enum:
+      enum:
+      - draft
+      - published
+      - ongoing
+      - finished
+      - archived
+      type: string
+      description: |-
+        * `draft` - 草稿
+        * `published` - 已发布
+        * `ongoing` - 进行中
+        * `finished` - 已结束
+        * `archived` - 已归档
+    StatusC3fEnum:
+      enum:
+      - in_progress
+      - submitted
+      - auto_graded
+      - reviewing
+      - graded
+      - timeout
+      type: string
+      description: |-
+        * `in_progress` - 答题中
+        * `submitted` - 已交卷
+        * `auto_graded` - 自动判分完成
+        * `reviewing` - 待人工复核
+        * `graded` - 已出分
+        * `timeout` - 超时交卷
+    StatusChangeRequest:
+      type: object
+      description: 状态流转。
+      properties:
+        status:
+          $ref: '#/components/schemas/Status158Enum'
+      required:
+      - status
+    SubmitReasonEnum:
+      enum:
+      - manual
+      - timeout
+      - forced
+      - system
+      type: string
+      description: |-
+        * `manual` - 学生主动交卷
+        * `timeout` - 超时自动交卷
+        * `forced` - 违规强制交卷
+        * `system` - 系统代交
+    SubmitRequest:
+      type: object
+      description: |-
+        交卷。
+
+        ``reason`` 只作为「学生自述」记录下来，最终以服务端判定的超时与否为准。
+        ``items`` 让前端在交卷的同一次请求里带上最后一批作答——「点了交卷但最后一题
+        没存上」是很常见的丢分事故，多带一个字段就能彻底避免。
+      properties:
+        reason:
+          allOf:
+          - $ref: '#/components/schemas/ReasonEnum'
+          default: manual
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnswerItemRequest'
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+      required:
+      - refresh
+    Type611Enum:
+      enum:
+      - single
+      - multiple
+      - judge
+      - fill
+      - short
+      - essay
+      type: string
+      description: |-
+        * `single` - 单选题
+        * `multiple` - 多选题
+        * `judge` - 判断题
+        * `fill` - 填空题
+        * `short` - 简答题
+        * `essay` - 论述题
+    User:
+      type: object
+      description: 用户公开信息（用于返回给前端渲染）。
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+          title: 用户名
+          description: 必填；长度为150个字符或以下；只能包含字母、数字、特殊字符“@”、“.”、“-”和“_”。
+        email:
+          type: string
+          format: email
+          title: 邮箱
+          maxLength: 254
+        real_name:
+          type: string
+          title: 真实姓名
+          maxLength: 32
+        display_name:
+          type: string
+          readOnly: true
+        role:
+          allOf:
+          - $ref: '#/components/schemas/Role273Enum'
+          readOnly: true
+          title: 角色
+        role_display:
+          type: string
+          readOnly: true
+        phone:
+          type: string
+          title: 手机号
+          maxLength: 20
+        student_no:
+          type: string
+          title: 学号 / 工号
+          description: 学生填学号，教师填工号；唯一性在序列化器里校验
+          maxLength: 32
+        school:
+          type: string
+          title: 学校 / 院系
+          maxLength: 64
+        subject:
+          type: string
+          readOnly: true
+          title: 任教学科
+          description: 教师专属：只管理该学科的资源（题库/试卷/考试）；留空表示不限学科
+        avatar:
+          type: string
+          format: uri
+          nullable: true
+          title: 头像
+        avatar_url:
+          type: string
+          description: 返回可直接放进 <img src> 的绝对地址。
+          readOnly: true
+        is_active:
+          type: boolean
+          readOnly: true
+          title: 有效
+          description: 指明用户是否被认为是活跃的。以反选代替删除帐号。
+        last_login:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+          title: 上次登录
+        last_login_ip:
+          type: string
+          readOnly: true
+          nullable: true
+          title: 最后登录 IP
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+          title: 加入日期
+      required:
+      - avatar_url
+      - date_joined
+      - display_name
+      - email
+      - id
+      - is_active
+      - last_login
+      - last_login_ip
+      - role
+      - role_display
+      - subject
+      - username
+    UserRegister:
+      type: object
+      description: |-
+        注册。密码做二次确认 + Django 内置强度校验。
+
+        学号 / 工号**不接收客户端输入**（管理员建号走 ``AdminUserSerializer``）：
+        学生按所选年级由系统派发学号，教师账号注册入口本就不开放。
+      properties:
+        username:
+          type: string
+          title: 用户名
+          description: 必填；长度为150个字符或以下；只能包含字母、数字、特殊字符“@”、“.”、“-”和“_”。
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: 邮箱
+          maxLength: 254
+        role:
+          allOf:
+          - $ref: '#/components/schemas/UserRegisterRoleEnum'
+          default: student
+        real_name:
+          type: string
+          title: 真实姓名
+          maxLength: 32
+        phone:
+          type: string
+          title: 手机号
+          maxLength: 20
+        school:
+          type: string
+          title: 学校 / 院系
+          maxLength: 64
+      required:
+      - email
+      - username
+    UserRegisterRequest:
+      type: object
+      description: |-
+        注册。密码做二次确认 + Django 内置强度校验。
+
+        学号 / 工号**不接收客户端输入**（管理员建号走 ``AdminUserSerializer``）：
+        学生按所选年级由系统派发学号，教师账号注册入口本就不开放。
+      properties:
+        username:
+          type: string
+          minLength: 1
+          title: 用户名
+          description: 必填；长度为150个字符或以下；只能包含字母、数字、特殊字符“@”、“.”、“-”和“_”。
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          minLength: 1
+          title: 邮箱
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+          minLength: 6
+        password2:
+          type: string
+          writeOnly: true
+          minLength: 1
+          title: 确认密码
+        role:
+          allOf:
+          - $ref: '#/components/schemas/UserRegisterRoleEnum'
+          default: student
+        real_name:
+          type: string
+          title: 真实姓名
+          maxLength: 32
+        grade_year:
+          type: string
+          writeOnly: true
+          minLength: 1
+          title: 入学年级
+          description: 4 位年份（如 2026）；系统据此派发学号
+        phone:
+          type: string
+          title: 手机号
+          maxLength: 20
+        school:
+          type: string
+          title: 学校 / 院系
+          maxLength: 64
+      required:
+      - email
+      - grade_year
+      - password
+      - password2
+      - username
+    UserRegisterRoleEnum:
+      enum:
+      - student
+      type: string
+      description: '* `student` - student'
+    UserRequest:
+      type: object
+      description: 用户公开信息（用于返回给前端渲染）。
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          title: 邮箱
+          maxLength: 254
+        real_name:
+          type: string
+          title: 真实姓名
+          maxLength: 32
+        phone:
+          type: string
+          title: 手机号
+          maxLength: 20
+        student_no:
+          type: string
+          title: 学号 / 工号
+          description: 学生填学号，教师填工号；唯一性在序列化器里校验
+          maxLength: 32
+        school:
+          type: string
+          title: 学校 / 院系
+          maxLength: 64
+        avatar:
+          type: string
+          format: binary
+          nullable: true
+          title: 头像
+      required:
+      - email
+    UserUpdate:
+      type: object
+      description: |-
+        用户自助修改资料（不允许改角色、用户名、学号/工号）。
+
+        学号 / 工号由系统派发，是身份标识，自助修改意味着可以冒用别人的号。
+      properties:
+        email:
+          type: string
+          format: email
+          title: 邮箱
+          maxLength: 254
+        real_name:
+          type: string
+          title: 真实姓名
+          maxLength: 32
+        phone:
+          type: string
+          title: 手机号
+          maxLength: 20
+        school:
+          type: string
+          title: 学校 / 院系
+          maxLength: 64
+        avatar:
+          type: string
+          format: uri
+          nullable: true
+          title: 头像
+      required:
+      - email
+    UserUpdateRequest:
+      type: object
+      description: |-
+        用户自助修改资料（不允许改角色、用户名、学号/工号）。
+
+        学号 / 工号由系统派发，是身份标识，自助修改意味着可以冒用别人的号。
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          title: 邮箱
+          maxLength: 254
+        real_name:
+          type: string
+          title: 真实姓名
+          maxLength: 32
+        phone:
+          type: string
+          title: 手机号
+          maxLength: 20
+        school:
+          type: string
+          title: 学校 / 院系
+          maxLength: 64
+        avatar:
+          type: string
+          format: binary
+          nullable: true
+          title: 头像
+      required:
+      - email
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+tags:
+- name: 认证
+  description: 注册 / 登录 / 刷新 / 登出 / 个人资料

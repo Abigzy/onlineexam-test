@@ -1,0 +1,31 @@
+# OnlineExam 接口自动化测试 —— 运行依赖
+#
+# 适用范围：本工程 onlineexam_api_autotest/
+# Python：  >= 3.11（实测 3.13.14）
+# 版本基准：D:/OnlineExam/.venv 实际运行环境，2026-11-04 导出
+#
+# 安装（务必用被测项目的 venv，不要用全局 python）：
+#   D:/OnlineExam/.venv/Scripts/python.exe -m pip install -r requirements.txt
+#
+# 说明：pytest 9.x 对 pythonpath / addopts 的行为与 7.x 略有差异，
+#       pytest.ini 里的 --strict-markers、filterwarnings 已按 9.x 编写，请勿降级到 7.x。
+
+# --- 测试框架 ---
+pytest==9.1.1
+pytest-html==4.2.0
+pytest-metadata==3.1.1        # pytest-html 的元数据插件，报告头部"环境信息"由它提供
+
+# --- HTTP 接口调用（common/client.py）---
+requests==2.34.2
+
+# --- 用例数据读取（common/config.py 读取 data/*.yaml）---
+PyYAML==6.0.3
+
+# --- 数据库断言（common/db_tools.py，MySQL 5.6）---
+PyMySQL==1.2.3
+
+# --- 可选：仅造数脚本 scripts/seed_env.py 需要 ---
+# 该脚本直接 import 被测项目的 Django ORM（apps.*），必须在 D:/OnlineExam 目录下、
+# 用被测项目自身的环境执行；日常跑测试用例不依赖下面两行，故默认注释。
+# 若确实要在此 venv 中重跑造数，取消注释：
+# Django==4.2.30

@@ -1,0 +1,9 @@
+页面默认渲染选项行数：4（A/B/C/D，其中 C/D 为空）
+前端实际提交的 options：[{"label": "A", "content": "甲", "is_correct": true}, {"label": "B", "content": "乙", "is_correct": false}, {"label": "C", "content": "", "is_correct": false}, {"label": "D", "content": "", "is_correct": false}]
+后端响应：HTTP 400
+报文 code=40000 message=请求参数有误
+errors={"options": [{}, {}, {"content": ["该字段不能为空。"]}, {"content": ["该字段不能为空。"]}]}
+
+判定：默认 4 个空选项行被原样提交 → 后端每个空行返回一个错误对象 →
+      前端对对象做 String() 得到「[object Object]」，用户无法理解。
+      预期：只提交已填写的选项，或提示「第 3 行选项内容不能为空」。

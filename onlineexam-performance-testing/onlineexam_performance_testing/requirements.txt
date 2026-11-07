@@ -1,0 +1,33 @@
+# ============================================================
+# OnlineExam 性能测试工程 · 依赖清单
+#
+# 环境口径（重要）：
+#   本工程**不单独建虚拟环境**，直接复用被测项目的 venv：
+#       D:\OnlineExam\.venv  （Python 3.13.14）
+#   原因：scripts/seed.py 要 django.setup() 读写压测库，必须能 import 被测项目的
+#   全部 app；两套环境各装一份 Django 只会导致"迁移版本对不上"的诡异问题。
+#
+# 安装（在核心工程目录执行）：
+#   D:\OnlineExam\.venv\Scripts\python.exe -m pip install -r requirements.txt
+#
+# 版本固定为 2026-11-06 实测通过的组合（数据见 docs/04-执行记录.md 环境表）。
+# ============================================================
+
+# ---------- 压测执行 ----------
+locust==2.47.0            # 压测引擎；用到 @tag / catch_response / --csv / --html
+gevent==26.9.0            # locust 的并发模型；锁版本，避免换 eventlet 后行为与结论不一致
+
+# ---------- 脚本依赖（仅本工程用到）----------
+psutil==7.2.2             # run_case.py 采样服务端 CPU / RSS / 并发连接数
+requests==2.34.2          # make_grade_sample.py 走真实接口造「一个班 50 份待批卷」
+waitress==3.0.2           # 生产近似口径的 WSGI 服务器（Windows 上 gunicorn 不可用）
+
+# ---------- 被测框架（seed.py 需要）----------
+# 说明：这几个包由被测项目提供。若你要在**全新环境**里跑本工程，
+#       请先装 D:\OnlineExam\requirements.txt，再装本文件；下面的固定版本只用于对齐，
+#       避免"压测工程能跑、但和被测项目的 Django 版本不一样"。
+Django==4.2.30
+djangorestframework==3.16.1
+djangorestframework-simplejwt==5.5.1   # seed.py 用 RefreshToken.for_user 离线签发 token
+PyMySQL==1.2.3            # 被测项目的 MySQL 驱动（settings 里指定）
+python-dotenv==1.2.3      # 被测项目 settings 读 D:\OnlineExam\.env

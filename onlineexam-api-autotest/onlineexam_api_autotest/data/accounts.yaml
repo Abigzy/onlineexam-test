@@ -1,0 +1,34 @@
+# 账号池：口令统一来自演示数据，缺失的用环境变量覆盖（API_PWD_ADMIN 等）
+# 所有账号仅用于只读冒烟与自造数据；不改演示数据。
+accounts:
+  admin:
+    username: admin
+    password: Exam@123456
+    role: admin
+    note: 管理员，用户管理 / 系统总览
+  teacher:
+    username: teacher
+    password: Exam@123456
+    role: teacher
+    note: 教师，无任教学科限制；建卷 / 建考 / 判分
+  os_teacher:
+    username: os_teacher
+    password: Exam@123456
+    role: teacher
+    subject: 操作系统
+    note: 学科教师，用于验证学科隔离
+  student:
+    username: student
+    password: Exam@123456
+    role: student
+    note: 学生主账号（s_001 同级），用于作答主链路
+  student2:
+    username: s_002
+    password: Exam@123456
+    role: student
+    note: 第二学生，用于跨人 404 / 班外场景
+  student3:
+    username: s_003
+    password: Exam@123456
+    role: student
+    note: 备用学生，避免同一账号次数用尽

@@ -1,0 +1,27 @@
+造数：ongoing=1616 future=1617 archived=1618
+[PASS] A overview 含 computed_status_display  —— keys=['applicants', 'avg_score', 'behavior', 'computed_status', 'computed_status_display', 'exam', 'graded', 'in_progress']
+[PASS] A display 非空且是中文文案  —— 实际 '进行中'
+[PASS] A 与 ExamListSerializer 同源  —— overview='进行中' / detail='进行中'
+[PASS] A computed_status 仍在（没被 display 顶掉）  —— 实际 'ongoing'
+[PASS] C 进行中：徽章非空且不是占位「—」  —— 徽章 '进行中'
+[PASS] C 进行中：徽章文案 == 接口 display  —— 徽章 '进行中' / 接口 '进行中'
+[PASS] C 进行中：徽章是中文状态  —— 徽章 '进行中'
+[PASS] C 未开始：徽章非空且不是占位「—」  —— 徽章 '已发布'
+[PASS] C 未开始：徽章文案 == 接口 display  —— 徽章 '已发布' / 接口 '已发布'
+[PASS] C 未开始：徽章是中文状态  —— 徽章 '已发布'
+[PASS] C 已归档：徽章非空且不是占位「—」  —— 徽章 '已归档'
+[PASS] C 已归档：徽章文案 == 接口 display  —— 徽章 '已归档' / 接口 '已归档'
+[PASS] C 已归档：徽章是中文状态  —— 徽章 '已归档'
+[PASS] D 六张概览卡仍是数字  —— 实际 {'applicants': '16', 'started': '1', 'progress': '1', 'submitted': '0', 'timeout': '0', 'notstarted': '15'}
+[PASS] D 已开始人数 ≥1（有学生开考）  —— started=1
+[PASS] D 徽章仍带 badge-soft 样式类  —— class='badge badge-soft badge-soft-gray'
+[INFO] 徽章颜色恒为 'badge badge-soft badge-soft-gray'（STATUS_BADGE 的 key 是作答状态，非考试状态）
+[PASS] E 模板兜底改成「—」
+[PASS] E 模板不再用空串兜底
+[PASS] F 后端守门：overview 字段断言存在
+[PASS] F 前端守门：徽章读 display 且兜底非空
+14:38:49 [INFO ] data: 考试 1616 有作答记录，已归档（业务规则不允许删除）
+14:38:49 [INFO ] data: 已删除考试 1617
+14:38:49 [INFO ] data: 已删除考试 1618
+
+汇总：20 项通过 / 0 项失败

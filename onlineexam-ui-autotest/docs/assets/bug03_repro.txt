@@ -1,0 +1,10 @@
+① DOM：<input data-kp> 的 dataset.kp = ''（truthy=False），知识点='线性表'
+② 勾选后 /papers/pool/ 请求数 = 0（预期 ≥1，实际说明勾选没触发 loadPool）
+   勾选状态 = True（界面显示已勾选，但状态没进 selectedKps）
+③ 预览请求 knowledge_point_ids = []（应为已勾选的知识点 id）
+④ 对照：「全选」后 /papers/pool/ 请求数 = 1
+   全选请求携带 knowledge_point_ids 数量 = 35（说明接口本身支持按知识点过滤）
+
+判定：BUG-03 成立。单个勾选因 `if (!event.target.dataset.kp) return;` 直接 return，
+      `data-kp` 是无值属性 → dataset.kp 为 ""（falsy），条件恒成立。
+      影响：教师按知识点组卷时，实际按整个学科抽题，且界面无任何提示。

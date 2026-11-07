@@ -1,0 +1,18 @@
+# OnlineExam UI 自动化测试 · Python 依赖
+#
+# 环境基线：Python 3.11（实测 3.11.2）｜Chrome 156（驱动随工程 tools/chromedriver.exe）
+# 安装：D:/python/python.exe -m pip install -r requirements.txt
+# 版本取自 2026-11-05 交付环境的 pip list，按"能复现"原则精确锁定。
+
+pytest==9.0.1
+selenium==4.38.0
+allure-pytest==2.16.2
+requests==2.32.4
+openpyxl==3.1.5
+
+# 说明
+# 1) allure-pytest 只负责把结果写进 report/allure-results；渲染成 HTML 报告要 Allure CLI，
+#    已随工程携带（tools/allure-2.30.0，需要本机有 Java 8+），不走 pip。
+# 2) openpyxl 只在 common/data_factory.py:334 生成题库导入模板时用到，不是可选依赖。
+# 3) pytest-html、locust 在本机环境里有，但本工程代码未使用，故不列入。
+# 4) pytest.ini 里的 `-p no:randomly` 是防御性禁用；未安装 pytest-randomly 也能正常启动。

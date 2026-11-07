@@ -1,0 +1,61 @@
+# =====================================================================
+# OnlineExam 测试仓库 · 全局忽略规则
+# 原则：只提交「代码 + 文档 + 用例基线」，运行期缓存 / 日志 / 报告 / 凭据一律不入库。
+# 注意：本文件位于仓库根目录，嵌套子目录下同名文件/目录用「不含中间斜杠」的写法，
+#       以便在任意层级都能命中（如 allure-2.30.0/ 而非 tools/allure-2.30.0/）。
+# =====================================================================
+
+# ---------------- Python ----------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# ---------------- 编辑器 / 系统 ----------------
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# PyCharm 运行配置（内含机器绝对路径），仅保留 .run/README.md 作为说明
+*.run.xml
+*.iml
+
+# ---------------- WorkBuddy 本地工作区（非项目内容） ----------------
+.workbuddy/
+.cache/
+
+# ---------------- 运行时凭据与缓存（含真实 JWT，禁止提交） ----------------
+# token_cache.json / runtime.json / .perf_tokens.json 里是真实 access token
+token_cache.json
+runtime.json
+.perf_tokens.json
+.perf_meta.json
+.perf_grade_sample.json
+*.perf_tokens.json
+locator_report.json
+
+# ---------------- 日志 ----------------
+log/
+logs/
+*.log
+
+# ---------------- 测试执行产物（可重新生成） ----------------
+# pytest-html / Allure / Locust 的 report 目录、运行期下载样例
+report/
+downloads/
+screenshots/
+
+# ---------------- 本地工具与二进制（体积大、平台相关，请自行下载） ----------------
+# chromedriver、Allure CLI、浏览器 profile
+chromedriver.exe
+.chrome-profile/
+allure-2.30.0/
+*.exe
+*.dll

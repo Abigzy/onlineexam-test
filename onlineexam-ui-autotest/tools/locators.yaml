@@ -1,0 +1,589 @@
+# OnlineExam UI 自动化 · 定位器清单（唯一事实来源）
+# 由 tools/probe_locators.py 在真实浏览器里逐条实测，结果写入 tools/locator_report.json
+#
+# 字段：
+#   id       页面标识（与步骤 5 的 Page 类一一对应）
+#   role     student / teacher / admin（决定用哪个会话打开）
+#   path     页面路径，{id} 由 ids 段替换
+#   cases    该页涉及的用例编号（便于回溯）
+#   wait     进入页面后等待的"业务节点"（不是 body，不是 document.readyState）
+#   locators 定位器列表：name 中文名 / css 选择器 / min 期望最少命中数 / text 期望首元素文本包含 / note 备注
+#
+# 纪律：
+#   1. 只允许 CSS_SELECTOR；禁止绝对 XPath、禁止 nth-child 绑业务语义
+#   2. min: 0 表示"结构上应存在但内容依赖造数"，步骤 6 用 UIAT 数据复测时才要求 ≥1
+#   3. 任何定位器命中数低于 min，probe 直接判 FAIL，不允许"先跑起来再说"
+
+version: 1
+base_url: http://127.0.0.1:8931
+accounts:
+  student: { username: student, password: Exam@123456 }
+  teacher: { username: teacher, password: Exam@123456 }
+  admin:   { username: admin,   password: Exam@123456 }
+ids:
+  # 演示库当前数据（2026-11-04 读取；数据变了只改这里，不改断言）
+  student_exam_graded: 34     # student 已批改作答所属考试
+  teacher_exam: 466           # 有作答的考试（监控/成绩单/证据链）
+  teacher_attempt: 586        # 该考试下的一份作答
+  teacher_paper: 11           # 有题目的试卷（34 题）
+  teacher_question: 2419      # 任一题目
+  student_classroom: 32       # student 所在班级
+  student_id: 3               # student 用户 id
+
+pages:
+  # ---------------------------------------------------------------- 学生
+  - id: student-home
+    role: student
+    path: /
+    cases: [UI-AUTH-01, UI-SEC-05]
+    wait: ".navbar-brand"
+    locators:
+      - { name: 顶部品牌, css: "a.navbar-brand", min: 1 }
+      - { name: 主导航容器, css: "#mainNav", min: 1 }
+      - { name: 统计卡（登录态）, css: ".stat-card", min: 1, note: ".stat-chip/.feature-card 只在未登录落地页" }
+      - { name: 统计值, css: ".stat-value", min: 1 }
+      - { name: 用户下拉, css: "#mainNav .nav-item.dropdown", min: 1 }
+
+  - id: student-my-exams
+    role: student
+    path: /my-exams/
+    cases: [UI-EXAM-01, UI-EXAM-02, UI-EXAM-15, UI-EXAM-16, UI-EXAM-19]
+    wait: "#exam-cards"
+    locators:
+      - { name: 卡片容器, css: "#exam-cards", min: 1 }
+      - { name: 页签, css: "#tabs button[data-tab]", min: 3 }
+      - { name: 刷新按钮, css: "#btn-refresh", min: 1 }
+      - { name: 考试卡片, css: "#exam-cards .card", min: 0, note: "数据依赖；造数后应 ≥1" }
+      - { name: 状态徽章, css: "#exam-cards .badge-soft", min: 0 }
+      - { name: 开始考试按钮, css: "#exam-cards .act-start", min: 0 }
+
+  - id: student-take
+    role: student
+    path: /exams/{student_exam_graded}/take/
+    cases: [UI-EXAM-03, UI-EXAM-04, UI-EXAM-05, UI-EXAM-06, UI-EXAM-11, UI-EXAM-12, UI-EXAM-14, UI-EXAM-21, UI-EXAM-22]
+    wait: "#exam-body"
+    locators:
+      - { name: 答题页主体, css: "#exam-body", min: 1 }
+      - { name: 加载占位, css: "#loading-box", min: 1 }
+      - { name: 题目宿主, css: "#question-host", min: 1 }
+      - { name: 计时器, css: "#timer", min: 1 }
+      - { name: 进度文本, css: "#progress-text", min: 1 }
+      - { name: 答题卡, css: "#q-sheet", min: 1 }
+      - { name: 答题卡格子, css: "#q-sheet .q-cell", min: 0, note: "仅正常作答态有" }
+      - { name: 保存状态, css: "#save-flag", min: 1 }
+      - { name: 交卷按钮, css: "#btn-submit", min: 1 }
+      - { name: 标记按钮, css: "#btn-flag", min: 1 }
+      - { name: 上一题, css: "#btn-prev", min: 1 }
+      - { name: 下一题, css: "#btn-next", min: 1 }
+      - { name: 全卷模式, css: "#btn-mode", min: 1 }
+      - { name: 交卷弹窗, css: "#submitModal", min: 1 }
+      - { name: 弹窗内按钮, css: "#submitModal button", min: 2 }
+      - { name: 确认交卷, css: "#btn-confirm-submit", min: 1 }
+      - { name: 题目块, css: "#question-host .question-block", min: 0 }
+      - { name: 选项行, css: "#question-host .option-row", min: 0 }
+      - { name: 强制交卷遮罩, css: "#shield", min: 1 }
+
+  - id: student-result
+    role: student
+    path: /exams/{student_exam_graded}/result/
+    cases: [UI-EXAM-17, UI-EXAM-18]
+    wait: "#result-host"
+    locators:
+      - { name: 结果宿主, css: "#result-host", min: 1 }
+      - { name: 结果卡片, css: "#result-host .card", min: 0, note: "已出分时应 ≥1" }
+      - { name: 逐题徽章, css: "#result-host .badge-soft", min: 0 }
+
+  - id: student-wrong-book
+    role: student
+    path: /my-wrong-book/
+    cases: [UI-STU-07, UI-STU-08, UI-STU-12]
+    wait: "#wrong-list"
+    locators:
+      - { name: 学科筛选, css: "#f-subject", min: 1 }
+      - { name: 汇总区, css: "#summary", min: 1 }
+      - { name: 错题列表, css: "#wrong-list", min: 1 }
+
+  - id: student-analytics
+    role: student
+    path: /analytics/me/
+    cases: [UI-STU-02, UI-STU-09, UI-STU-14]
+    wait: "#student-meta"
+    locators:
+      - { name: 学生信息, css: "#student-meta", min: 1 }
+      - { name: 趋势图容器, css: "#chart-trend", min: 1 }
+      - { name: 诊断报告区, css: "#report-host", min: 1 }
+      - { name: 图表画布, css: "canvas", min: 1 }
+      - { name: 诊断按钮, css: "#btn-diagnose", min: 1 }
+      - { name: 学科选择, css: "#subject-select", min: 1 }
+
+  - id: student-practice
+    role: student
+    path: /practice/
+    cases: [UI-STU-01, UI-STU-03, UI-STU-04, UI-STU-05, UI-STU-06, UI-STU-11, UI-STU-13]
+    wait: "#practice-host"
+    locators:
+      - { name: 学科选择, css: "#subject-select", min: 1 }
+      - { name: 换一批, css: "#btn-shuffle", min: 1 }
+      - { name: 练习宿主, css: "#practice-host", min: 1 }
+      - { name: 练习卡片, css: ".practice-card", min: 0, note: "有学科且有题时 ≥1" }
+      - { name: 提交作答, css: ".practice-card [data-submit]", min: 0 }
+      - { name: 查看答案, css: ".practice-card [data-toggle-answer]", min: 0 }
+      - { name: 再做一次, css: ".practice-card [data-redo]", min: 0 }
+      - { name: 选项行, css: ".practice-card .option-row", min: 0 }
+      - { name: AI 优化理由, css: "#btn-ai-reason", min: 0, note: "部分场景不渲染" }
+
+  - id: student-classrooms
+    role: student
+    path: /classrooms/
+    cases: [UI-CLS-01]
+    wait: "#class-list"
+    locators:
+      - { name: 班级列表, css: "#class-list", min: 1 }
+      - { name: 班级卡片, css: "#class-list .card", min: 0, note: "数据依赖" }
+
+  - id: student-classroom-detail
+    role: student
+    path: /classrooms/{student_classroom}/
+    cases: [UI-CLS-02, UI-CLS-03]
+    wait: "#c-name"
+    locators:
+      - { name: 班级名, css: "#c-name", min: 1 }
+      - { name: 班级元信息, css: "#c-meta", min: 1 }
+      - { name: 成员数, css: "#member-count", min: 1 }
+      - { name: 成员列表, css: "#member-list", min: 1 }
+      - { name: 成员行, css: "#member-list tr", min: 0 }
+      - { name: 越权弹窗, css: "#permModal", min: 1, note: "常驻 DOM，断言须看可见性" }
+      - { name: 添加学生（学生无此权限）, css: "#btn-add", min: 0, note: "学生只读，按钮不存在才正确" }
+
+  - id: student-profile
+    role: student
+    path: /profile/
+    cases: [UI-AUTH-11, UI-AUTH-12]
+    wait: "form"
+    locators:
+      - { name: 表单, css: "form[method=post]", min: 2 }
+      - { name: 真实姓名, css: "input[name=real_name]", min: 1 }
+      - { name: 邮箱, css: "input[name=email]", min: 1 }
+      - { name: 手机号, css: "input[name=phone]", min: 1 }
+      - { name: 学校, css: "input[name=school]", min: 1 }
+      - { name: 头像, css: "input[name=avatar]", min: 1 }
+      - { name: 原密码, css: "input[name=old_password]", min: 1 }
+      - { name: 新密码, css: "input[name=new_password]", min: 1 }
+      - { name: 确认新密码, css: "input[name=confirm_password]", min: 1 }
+      - { name: 提交按钮, css: "button[type=submit]", min: 2 }
+
+  # ---------------------------------------------------------------- 教师
+  - id: teacher-home
+    role: teacher
+    path: /
+    cases: [UI-AUTH-02]
+    wait: ".navbar-brand"
+    locators:
+      - { name: 主导航容器, css: "#mainNav", min: 1 }
+      - { name: 统计卡（登录态）, css: ".stat-card", min: 1 }
+      - { name: 统计值, css: ".stat-value", min: 1 }
+      - { name: 用户下拉, css: "#mainNav .nav-item.dropdown", min: 1 }
+
+  - id: teacher-question-bank
+    role: teacher
+    path: /question-bank/
+    cases: [UI-QB-01, UI-QB-04, UI-QB-05, UI-QB-06, UI-QB-07, UI-QB-10, UI-QB-15, UI-QB-16, UI-QB-20, UI-QB-21]
+    wait: "#question-rows"
+    locators:
+      - { name: 题目表格体, css: "#question-rows", min: 1 }
+      - { name: 题目行, css: "#question-rows tr", min: 0, note: "数据依赖；应有 ≥1" }
+      - { name: 学科筛选, css: "#f-subject", min: 1 }
+      - { name: 题型筛选, css: "#f-type", min: 1 }
+      - { name: 难度筛选, css: "#f-difficulty", min: 1 }
+      - { name: 来源筛选, css: "#f-source", min: 1 }
+      - { name: 知识点筛选, css: "#f-knowledge", min: 1 }
+      - { name: 关键词, css: "#f-keyword", min: 1 }
+      - { name: 重置, css: "#btn-reset", min: 1 }
+      - { name: 导入, css: "#btn-import", min: 1 }
+      - { name: 导入弹窗, css: "#importModal", min: 1 }
+      - { name: 导入文件, css: "#import-file", min: 1 }
+      - { name: 试解析, css: "#import-dry-run", min: 1 }
+      - { name: 导入结果区, css: "#import-result", min: 1 }
+      - { name: 导出 xlsx, css: "#export-xlsx", min: 1 }
+      - { name: 导出 csv, css: "#export-csv", min: 1 }
+      - { name: 模板下载, css: "#download-template", min: 1 }
+      - { name: 分页, css: "#pager", min: 1 }
+      - { name: 页码信息, css: "#page-info", min: 1 }
+      - { name: 停用按钮, css: "#question-rows button[data-id]", min: 0 }
+
+  - id: teacher-question-new
+    role: teacher
+    path: /question-bank/new/
+    cases: [UI-QB-02, UI-QB-11, UI-QB-12]
+    wait: "#q-stem"
+    locators:
+      - { name: 题型, css: "#q-type", min: 1 }
+      - { name: 学科, css: "#q-subject", min: 1 }
+      - { name: 题干, css: "#q-stem", min: 1 }
+      - { name: 答案, css: "#q-answer", min: 1 }
+      - { name: 解析, css: "#q-analysis", min: 1 }
+      - { name: 难度, css: "#q-difficulty", min: 1 }
+      - { name: 分值, css: "#q-score", min: 1 }
+      - { name: 选项区, css: "#options-block", min: 1 }
+      - { name: 选项列表, css: "#options-list", min: 1 }
+      - { name: 添加选项, css: "#btn-add-option", min: 1 }
+      - { name: 答案区, css: "#answer-block", min: 1 }
+      - { name: 知识点多选, css: "#kp-ids", min: 1 }
+      - { name: 保存, css: "#btn-save", min: 1 }
+
+  - id: teacher-question-edit
+    role: teacher
+    path: /question-bank/{teacher_question}/edit/
+    cases: [UI-QB-08, UI-QB-09]
+    wait: "#q-stem"
+    locators:
+      - { name: 题干, css: "#q-stem", min: 1 }
+      - { name: 题型, css: "#q-type", min: 1 }
+      - { name: 选项列表, css: "#options-list", min: 1 }
+      - { name: 保存, css: "#btn-save", min: 1 }
+
+  - id: teacher-ai-generate
+    role: teacher
+    path: /question-bank/ai-generate/
+    cases: [UI-QB-13]
+    wait: "#btn-generate"
+    locators:
+      - { name: 学科, css: "#g-subject", min: 1 }
+      - { name: 知识点, css: "#g-knowledge", min: 1 }
+      - { name: 题量, css: "#g-count", min: 1 }
+      - { name: 难度, css: "#g-difficulty", min: 1 }
+      - { name: 来源, css: "#g-source", min: 1 }
+      - { name: 生成按钮, css: "#btn-generate", min: 1 }
+      - { name: 草稿区, css: "#drafts", min: 1 }
+      - { name: 全部采纳, css: "#btn-accept-all", min: 1 }
+      - { name: 入库, css: "#btn-save-all", min: 1 }
+      - { name: 清空, css: "#btn-clear", min: 1 }
+      - { name: Provider 徽章, css: "#provider-badge", min: 1 }
+
+  - id: teacher-knowledge-points
+    role: teacher
+    path: /knowledge-points/
+    cases: [UI-QB-03, UI-QB-14, UI-QB-18, UI-QB-19]
+    wait: "#tree-container"
+    locators:
+      - { name: 知识树, css: "#tree-container", min: 1 }
+      - { name: 树节点, css: "#tree-container [data-id], #tree-container li", min: 0, note: "结构随实现变化，实测校正" }
+      - { name: 新建根节点, css: "#btn-add-root", min: 1 }
+      - { name: 刷新, css: "#btn-refresh", min: 1 }
+      - { name: 表单标题, css: "#form-title", min: 1 }
+      - { name: 名称, css: "#kp-name", min: 1 }
+      - { name: 编码, css: "#kp-code", min: 1 }
+      - { name: 学科, css: "#kp-subject", min: 1 }
+      - { name: 父节点, css: "#kp-parent", min: 1 }
+      - { name: 排序, css: "#kp-order", min: 1 }
+      - { name: 启用开关, css: "#kp-active", min: 1 }
+      - { name: 保存, css: "#btn-save", min: 1 }
+      - { name: 重置, css: "#btn-reset-form", min: 1 }
+
+  - id: teacher-papers
+    role: teacher
+    path: /papers/
+    cases: [UI-PAP-01, UI-PAP-07, UI-PAP-08, UI-PAP-11, UI-PAP-15]
+    wait: "#paperRows"
+    locators:
+      - { name: 试卷表格体, css: "#paperRows", min: 1 }
+      - { name: 试卷行, css: "#paperRows tr", min: 0, note: "数据依赖" }
+      - { name: 关键词, css: "#filterKeyword", min: 1 }
+      - { name: 学科筛选, css: "#filterSubject", min: 1 }
+      - { name: 状态筛选, css: "#filterStatus", min: 1 }
+      - { name: 组卷方式筛选, css: "#filterMode", min: 1 }
+      - { name: 筛选按钮, css: "#btnSearch", min: 1 }
+      - { name: 重置, css: "#btnReset", min: 1 }
+      - { name: 统计总数, css: "#statTotal", min: 1 }
+      - { name: 统计草稿, css: "#statDraft", min: 1 }
+      - { name: 统计已发布, css: "#statPublished", min: 1 }
+      - { name: 分页, css: "#pager", min: 1 }
+      - { name: 页码, css: "#pageInfo", min: 1 }
+
+  - id: teacher-paper-new
+    role: teacher
+    path: /papers/new/
+    cases: [UI-PAP-02, UI-PAP-03, UI-PAP-04, UI-PAP-05, UI-PAP-06, UI-PAP-14]
+    wait: "#kpTree"
+    locators:
+      - { name: 知识树, css: "#kpTree", min: 1 }
+      - { name: 全选知识点, css: "#kpToggleAll", min: 1 }
+      - { name: 卷名, css: "#paperTitle", min: 1 }
+      - { name: 保存卷头, css: "#btnSaveTitle", min: 1 }
+      - { name: 蓝图行, css: "#blueprintRows", min: 1 }
+      - { name: 蓝图合计, css: "#blueprintTotal", min: 1 }
+      - { name: 加大题, css: "#btnAddRow", min: 1 }
+      - { name: 试算, css: "#btnCompose", min: 1 }
+      - { name: 随机组卷, css: "#btnRandomCompose", min: 1 }
+      - { name: 随机题量, css: "#composeRandomCount", min: 1 }
+      - { name: 题量元信息, css: "#metaCount", min: 1 }
+      - { name: 分值元信息, css: "#metaScore", min: 1 }
+      - { name: 实际题量, css: "#metaActual", min: 1 }
+      - { name: 雷达图, css: "#radarChart", min: 1 }
+      - { name: 难度图, css: "#difficultyChart", min: 1 }
+      - { name: 从题库加题, css: "#btnOpenPicker", min: 1 }
+      - { name: 选题弹窗, css: "#pickerModal", min: 1 }
+      - { name: 选题搜索, css: "#pickKeyword", min: 1 }
+      - { name: 加入试卷, css: "#btnPickAdd", min: 1 }
+
+  - id: teacher-paper-compose
+    role: teacher
+    path: /papers/{teacher_paper}/compose/
+    cases: [UI-PAP-09, UI-PAP-10, UI-PAP-12, UI-PAP-13]
+    wait: "#sheetBody"
+    locators:
+      - { name: 卷面表格体, css: "#sheetBody", min: 1 }
+      - { name: 卷面行, css: "#sheetBody tr", min: 0, note: "34 题应 ≥1" }
+      - { name: 卷名, css: "#paperTitle", min: 1 }
+      - { name: 状态徽章, css: "#statusBadge", min: 1 }
+      - { name: 预览, css: "#btnPreview", min: 1 }
+      - { name: 预览内容, css: "#previewBody", min: 1 }
+      - { name: 发布, css: "#btnPublish", min: 1 }
+      - { name: 复制, css: "#btnClone", min: 1 }
+      - { name: 导出, css: "#btnExport", min: 1 }
+      - { name: 卷头信息, css: "#headMeta", min: 1 }
+
+  - id: teacher-exams
+    role: teacher
+    path: /exams/
+    cases: [UI-EXM-01, UI-EXM-02, UI-EXM-04, UI-EXM-05, UI-EXM-06, UI-EXM-07, UI-EXM-10, UI-EXM-13]
+    wait: "#exam-body"
+    locators:
+      - { name: 考试表格体, css: "#exam-body", min: 1 }
+      - { name: 考试行, css: "#exam-body tr", min: 0, note: "数据依赖" }
+      - { name: 新建考试, css: "#btn-new-exam", min: 1 }
+      - { name: 新建弹窗, css: "#examModal", min: 1 }
+      - { name: 弹窗标题, css: "#exam-modal-title", min: 1 }
+      - { name: 考试标题, css: "#e-title", min: 1 }
+      - { name: 试卷选择, css: "#e-paper", min: 1 }
+      - { name: 开始时间, css: "#e-start", min: 1 }
+      - { name: 结束时间, css: "#e-end", min: 1 }
+      - { name: 时长, css: "#e-duration", min: 1 }
+      - { name: 保存, css: "#btn-save-exam", min: 1 }
+      - { name: 状态筛选, css: "#f-status", min: 1 }
+      - { name: 关键词, css: "#f-keyword", min: 1 }
+      - { name: 统计总数, css: "#stat-total", min: 1 }
+      - { name: 统计进行中, css: "#stat-running", min: 1 }
+      - { name: 上一页, css: "#btn-prev", min: 1 }
+      - { name: 下一页, css: "#btn-next", min: 1 }
+      - { name: 页码, css: "#page-info", min: 1 }
+
+  - id: teacher-monitor
+    role: teacher
+    path: /exams/{teacher_exam}/monitor/
+    cases: [UI-EXM-08, UI-EXM-09, UI-EXM-11, UI-EXM-12]
+    wait: "#exam-status"
+    locators:
+      - { name: 考试状态, css: "#exam-status", min: 1 }
+      - { name: 应考人数, css: "#ov-applicants", min: 1 }
+      - { name: 已开始, css: "#ov-started", min: 1 }
+      - { name: 答题中, css: "#ov-progress", min: 1 }
+      - { name: 已交卷, css: "#ov-submitted", min: 1 }
+      - { name: 超时, css: "#ov-timeout", min: 1 }
+      - { name: 未开始, css: "#ov-notstarted", min: 1 }
+      - { name: 状态页签, css: "#status-tabs button", min: 3 }
+      - { name: 只看嫌疑, css: "#btn-suspicious", min: 1 }
+      - { name: 刷新, css: "#btn-refresh", min: 1 }
+      - { name: 作答表格体, css: "#attempt-body", min: 1 }
+      - { name: 作答行, css: "#attempt-body tr", min: 0, note: "考试 466 应有数据" }
+      - { name: 行为预警, css: "#flagged-list", min: 1 }
+      - { name: 切屏计数, css: "#be-switch", min: 1 }
+      - { name: 阈值, css: "#be-threshold", min: 1 }
+
+  - id: teacher-grading
+    role: teacher
+    path: /grading/
+    cases: [UI-GRD-01, UI-GRD-03, UI-GRD-04, UI-GRD-05, UI-GRD-06, UI-GRD-09, UI-GRD-10, UI-GRD-12]
+    wait: "#exam-select"
+    locators:
+      - { name: 考试选择, css: "#exam-select", min: 1 }
+      - { name: 队列, css: "#queue-list", min: 1 }
+      - { name: 批改面板, css: "#attempt-panel", min: 1 }
+      - { name: 全选, css: "#chk-all", min: 1 }
+      - { name: 成绩单入口, css: "#btn-scoreboard", min: 1 }
+      - { name: 判客观题, css: "#btn-grade", min: 0, note: "选中作答后渲染" }
+      - { name: AI 批改, css: "#btn-ai", min: 0 }
+      - { name: 出分, css: "#btn-finalize", min: 0 }
+
+  - id: teacher-scoreboard
+    role: teacher
+    path: /grading/exams/{teacher_exam}/scoreboard/
+    cases: [UI-GRD-02, UI-GRD-07, UI-GRD-08, UI-GRD-11]
+    wait: "#score-body"
+    locators:
+      - { name: 成绩表格体, css: "#score-body", min: 1 }
+      - { name: 成绩行, css: "#score-body tr", min: 0 }
+      - { name: 应考人数, css: "#s-applicants", min: 1 }
+      - { name: 已交卷, css: "#s-submitted", min: 1 }
+      - { name: 已批改, css: "#s-graded", min: 1 }
+      - { name: 平均分, css: "#s-avg", min: 1 }
+      - { name: 最高分, css: "#s-max", min: 1 }
+      - { name: 及格率, css: "#s-passrate", min: 1 }
+      - { name: 已判分, css: "#i-total", min: 1 }
+      - { name: 及格数, css: "#i-pass", min: 1 }
+      - { name: 待判分, css: "#i-pending", min: 1 }
+      - { name: 多选策略, css: "#i-policy", min: 1 }
+      - { name: 班级筛选, css: "#f-classroom", min: 1 }
+      - { name: 关键词, css: "#f-keyword", min: 1 }
+      - { name: 重载, css: "#btn-reload", min: 1 }
+      - { name: 分布图, css: "#distribution", min: 1 }
+
+  - id: teacher-analytics
+    role: teacher
+    path: /analytics/
+    cases: [UI-ANA-01, UI-ANA-02, UI-ANA-08]
+    wait: "#dashboard-host"
+    locators:
+      - { name: 看板宿主, css: "#dashboard-host", min: 1 }
+      - { name: 考试选择, css: "#exam-select", min: 1 }
+      - { name: 班级选择, css: "#class-select", min: 1 }
+      - { name: 刷新, css: "#btn-refresh", min: 1 }
+      - { name: 图表画布, css: "canvas", min: 0, note: "有数据才渲染" }
+
+  - id: teacher-analytics-student
+    role: teacher
+    path: /analytics/students/{student_id}/
+    cases: [UI-ANA-03]
+    wait: "#student-meta"
+    locators:
+      - { name: 学生信息, css: "#student-meta", min: 1 }
+      - { name: 学科选择, css: "#subject-select", min: 1 }
+      - { name: 趋势图, css: "#chart-trend", min: 1 }
+      - { name: 诊断区, css: "#report-host", min: 1 }
+      - { name: 诊断按钮, css: "#btn-diagnose", min: 1 }
+
+  - id: teacher-proctoring
+    role: teacher
+    path: /proctoring/
+    cases: [UI-ANA-04, UI-ANA-06, UI-ANA-07]
+    wait: "#kpi-row"
+    locators:
+      - { name: KPI 区, css: "#kpi-row", min: 1 }
+      - { name: 可疑列表, css: "#list-host", min: 1 }
+      - { name: 规则区, css: "#rules-host", min: 1 }
+      - { name: 考试选择, css: "#exam-select", min: 1 }
+      - { name: 只看嫌疑, css: "#only-suspicious", min: 1 }
+      - { name: 刷新, css: "#btn-refresh", min: 1 }
+      - { name: 风险分档图, css: "#level-chart", min: 1 }
+      - { name: 异常检测区, css: "#anomaly-host", min: 1 }
+      - { name: 告警区, css: "#alert-host", min: 1 }
+
+  - id: teacher-evidence
+    role: teacher
+    path: /proctoring/attempts/{teacher_attempt}/evidence/
+    cases: [UI-ANA-05]
+    wait: "#risk-score"
+    locators:
+      - { name: 风险分, css: "#risk-score", min: 1 }
+      - { name: 风险说明, css: "#risk-note", min: 1 }
+      - { name: 命中规则区, css: "#signals-host", min: 1 }
+      - { name: 时间线, css: "#timeline-host", min: 1 }
+      - { name: 时间线图, css: "#timeline-chart", min: 1 }
+      - { name: 作答元信息, css: "#attempt-meta", min: 1 }
+      - { name: 埋点概览, css: "#kpi-row", min: 1 }
+      - { name: 环境区, css: "#env-host", min: 1 }
+
+  - id: teacher-classrooms
+    role: teacher
+    path: /classrooms/
+    cases: [UI-CLS-04, UI-CLS-06]
+    wait: "#class-list"
+    locators:
+      - { name: 班级列表, css: "#class-list", min: 1 }
+      - { name: 新建班级, css: "#btn-create", min: 1 }
+      - { name: 新建弹窗, css: "#classModal", min: 1 }
+      - { name: 弹窗标题, css: "#classModalTitle", min: 1 }
+      - { name: 班级名称, css: "#f-name", min: 1 }
+      - { name: 年级, css: "#f-grade", min: 1 }
+      - { name: 学科, css: "#f-subject", min: 1 }
+      - { name: 行政班单选, css: "#ct-admin", min: 1 }
+      - { name: 学科班单选, css: "#ct-subject", min: 1 }
+      - { name: 保存, css: "#btn-save", min: 1 }
+
+  - id: teacher-classroom-detail
+    role: admin
+    path: /classrooms/{student_classroom}/
+    cases: [UI-CLS-05, UI-CLS-07]
+    # 教师账号当前无「可管理班级」，访问他班 403；班级增删改用管理员会话验证，
+    # 教师自建班的用例留到步骤 6 用 UIAT_TEA 造数后复测（见 docs/04 §6.3）
+    wait: "#c-name"
+    locators:
+      - { name: 班级名, css: "#c-name", min: 1 }
+      - { name: 成员数, css: "#member-count", min: 1 }
+      - { name: 成员列表, css: "#member-list", min: 1 }
+      - { name: 添加学生, css: "#btn-add", min: 1 }
+      - { name: 编辑信息, css: "#btn-edit", min: 1 }
+      - { name: 删除班级, css: "#btn-delete-class", min: 1 }
+      - { name: 冲突弹窗, css: "#conflictModal", min: 1 }
+
+  # ---------------------------------------------------------------- 管理员
+  - id: admin-dashboard
+    role: admin
+    path: /manage/
+    cases: [UI-AUTH-03, UI-ADM-05]
+    wait: ".page-head"
+    locators:
+      - { name: 页头, css: ".page-head", min: 1 }
+      - { name: 指标卡, css: ".stat-card", min: 1 }
+      - { name: 指标值, css: ".stat-value", min: 1 }
+      - { name: 新建用户入口, css: "a.btn-brand", min: 1 }
+      - { name: 用户下拉, css: "#mainNav .nav-item.dropdown", min: 1 }
+
+  - id: admin-users
+    role: admin
+    path: /manage/users/
+    cases: [UI-ADM-01, UI-ADM-04, UI-ADM-06]
+    wait: "#filter-form"
+    locators:
+      - { name: 筛选表单, css: "#filter-form", min: 1 }
+      - { name: 用户行, css: "table tbody tr", min: 0 }
+      - { name: 停用弹窗, css: "#toggleModal", min: 1 }
+      - { name: 停用确认, css: "#toggleConfirm", min: 1 }
+      - { name: 停用文案, css: "#toggleModalText", min: 1 }
+      - { name: 重置密码弹窗, css: "#resetModal", min: 1 }
+      - { name: 新密码文本, css: "#pwd-result-text", min: 1 }
+      - { name: 复制密码, css: "#pwd-copy", min: 1 }
+
+  - id: admin-user-new
+    role: admin
+    path: /manage/users/new/
+    cases: [UI-ADM-02, UI-ADM-07, UI-ADM-08]
+    wait: "#user-form"
+    locators:
+      - { name: 用户表单, css: "#user-form", min: 1 }
+      - { name: 生成密码, css: "#btn-gen-password", min: 1 }
+      - { name: 用户名, css: "input[name=username]", min: 1 }
+      - { name: 邮箱, css: "input[name=email]", min: 1 }
+      - { name: 真实姓名, css: "input[name=real_name]", min: 1 }
+      - { name: 角色, css: "select[name=role]", min: 1 }
+      - { name: 年级, css: "select[name=grade_year]", min: 0, note: "建学生时才有意义" }
+      - { name: 提交, css: "#user-form button[type=submit]", min: 1 }
+
+  - id: admin-user-edit
+    role: admin
+    path: /manage/users/{student_id}/edit/
+    cases: [UI-ADM-03]
+    wait: "#user-form"
+    locators:
+      - { name: 用户表单, css: "#user-form", min: 1 }
+      - { name: 邮箱, css: "input[name=email]", min: 1 }
+      - { name: 姓名, css: "input[name=real_name]", min: 1 }
+      - { name: 提交, css: "#user-form button[type=submit]", min: 1 }
+
+  - id: admin-org
+    role: admin
+    path: /manage/org/
+    cases: []
+    wait: ".container"
+    locators:
+      - { name: 容器, css: ".container", min: 1 }
+      - { name: 卡片, css: ".card", min: 0 }
+
+  - id: admin-system
+    role: admin
+    path: /manage/system/
+    cases: []
+    wait: ".container"
+    locators:
+      - { name: 容器, css: ".container", min: 1 }
+      - { name: 卡片, css: ".card", min: 0 }

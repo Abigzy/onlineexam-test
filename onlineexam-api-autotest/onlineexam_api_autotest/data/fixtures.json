@@ -1,0 +1,81 @@
+{
+  "run_ts": "1104024641",
+  "prefix": "at_1104024641",
+  "subject": "操作系统",
+  "password": "Exam@123456",
+  "teacher": {
+    "id": 189,
+    "username": "at_1104024641_teacher",
+    "password": "Exam@123456"
+  },
+  "students": {
+    "a": {
+      "id": 190,
+      "username": "at_1104024641_a",
+      "password": "Exam@123456",
+      "student_no": "209946411",
+      "real_name": "自动化学生A"
+    },
+    "b": {
+      "id": 191,
+      "username": "at_1104024641_b",
+      "password": "Exam@123456",
+      "student_no": "209946412",
+      "real_name": "自动化学生B"
+    }
+  },
+  "knowledge": {
+    "root": 183,
+    "child": 184,
+    "net": 185
+  },
+  "questions": {
+    "single": 2439,
+    "multiple": 2440,
+    "judge": 2441,
+    "fill": 2442,
+    "short": 2443,
+    "essay": 2444,
+    "inactive": 2445
+  },
+  "answers": {
+    "single": "A",
+    "multiple": "ABC",
+    "judge": "A",
+    "fill": "后进先出\n先进先出"
+  },
+  "scores": {
+    "single": 2,
+    "multiple": 4,
+    "judge": 2,
+    "fill": 4,
+    "short": 10,
+    "essay": 10,
+    "total": 32
+  },
+  "papers": {
+    "draft": 381,
+    "published": 382
+  },
+  "paper_questions": {
+    "2439": 1116,
+    "2440": 1115,
+    "2441": 1114,
+    "2442": 1113,
+    "2443": 1112,
+    "2444": 1111
+  },
+  "paper_questions_draft": {
+    "2439": 1110,
+    "2440": 1109,
+    "2441": 1108,
+    "2442": 1107,
+    "2443": 1106,
+    "2444": 1105
+  },
+  "exams": {
+    "normal": 567,
+    "score_open": 568,
+    "force": 569
+  }
+}

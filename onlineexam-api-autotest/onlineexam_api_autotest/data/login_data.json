@@ -1,0 +1,44 @@
+[
+  {
+    "desc": "教师用户名登录成功",
+    "req_data": {"username": "teacher", "password": "Exam@123456"},
+    "status_code": 200,
+    "code": 0,
+    "message": "success"
+  },
+  {
+    "desc": "学生用户名登录成功",
+    "req_data": {"username": "student", "password": "Exam@123456"},
+    "status_code": 200,
+    "code": 0,
+    "message": "success"
+  },
+  {
+    "desc": "学生用学号登录成功",
+    "req_data": {"username": "20260046", "password": "Exam@123456"},
+    "status_code": 200,
+    "code": 0,
+    "message": "success"
+  },
+  {
+    "desc": "密码错误",
+    "req_data": {"username": "teacher", "password": "wrong-pass"},
+    "status_code": 401,
+    "code": 40100,
+    "message": "账号或密码错误"
+  },
+  {
+    "desc": "账号不存在",
+    "req_data": {"username": "at_no_such_user", "password": "Exam@123456"},
+    "status_code": 401,
+    "code": 40100,
+    "message": "账号或密码错误"
+  },
+  {
+    "desc": "用户名为空",
+    "req_data": {"username": "", "password": "Exam@123456"},
+    "status_code": 400,
+    "code": 40000,
+    "message": null
+  }
+]
