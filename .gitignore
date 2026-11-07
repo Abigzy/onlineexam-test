@@ -64,3 +64,10 @@ chromedriver.exe
 allure-2.30.0/
 *.exe
 *.dll
+
+# ---------------- 用例生成器工具链（仅本地重新生成交付物用，不上推） ----------------
+# 数据源 data_part*.py 与产物(xlsx/xmind/md)均已入库，生成器脚本属工具、非测试资产
+onlineexam-fun-test/scripts/build_cases_md.py
+onlineexam-fun-test/scripts/build_xlsx.py
+onlineexam-fun-test/scripts/build_xmind.py
+
