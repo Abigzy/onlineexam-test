@@ -1,7 +1,7 @@
 # OnlineExam UI 自动化测试 · 工作区
 
-> 被测系统：`D:/OnlineExam`（基于 Django 的 AI 在线考试与学情分析系统，服务端渲染页面层）
-> 自动化工程：`D:/onlineexam-ui-autotest/onlineexam_ui_autotest`（**第 5 步之前不动**）
+> 被测系统：`OnlineExam`（基于 Django 的 AI 在线考试与学情分析系统，服务端渲染页面层）
+> 自动化工程：`onlineexam-ui-autotest/onlineexam_ui_autotest`（**第 5 步之前不动**）
 > 流程：需求分析与可行性评估 → 测试计划与策略 → 用例设计与数据准备 → 环境搭建与元素定位 → 框架设计与脚本开发 → 执行与监控 → 结果分析与报告
 > 技术栈：pytest + Selenium 4.38 + Chrome 156（headless=new）+ **PO 模式** + **Allure 报告**（入口 `report/allure-report/uireport.html`）
 
@@ -24,7 +24,7 @@
 ## 二、目录约定
 
 ```
-D:/onlineexam-ui-autotest/
+onlineexam-ui-autotest/
 ├── docs/
 │   ├── README.md                          ← 本文件（进度看板）
 │   ├── 01-需求分析与自动化可行性评估.md
@@ -66,7 +66,7 @@ D:/onlineexam-ui-autotest/
 
 ## 三、纪律（本项目约定）
 
-1. **被测项目只读**：不改 `D:/OnlineExam` 任何代码；元素无法定位时改定位策略，不要求开发加 id（除确有必要，走"待确认"）。
+1. **被测项目只读**：不改 `OnlineExam` 任何代码；元素无法定位时改定位策略，不要求开发加 id（除确有必要，走"待确认"）。
 2. **不重复覆盖**：接口断言归接口自动化，页面扫荡归 `UI走查清单`，本套只守"交互后的状态变化"。
 3. **数据带前缀**：所有造数 `UIAT_` 前缀，用后精确清理，不污染演示库（收工时实测：用户 183、活跃题 2423、班级 82，其中 `UIAT_` 用户/班级/未归档考试均为 0）。
 4. **断言用事实**：断言可见 DOM 状态与文案，不断言像素、不断言接口报文、不赌具体秒数。
@@ -76,6 +76,6 @@ D:/onlineexam-ui-autotest/
 8. **跑全量前先归档旧结果**：`pytest.ini` 带 `--clean-alluredir`，Allure 插件启动会 `rmtree(report/allure-results)`；目录文件数超过 100 会触发运行环境的批量删除保护，表现为 `INTERNALERROR ... SystemExit: 1`（后台启动尤其容易撞上）。先 `mv report/allure-results report/allure-results_<轮次>` 再 `mkdir report/allure-results`，旧结果按轮次留档。
 9. **改 PO 方法（新增/改名/删旧类）后必须 grep 全仓调用点**：第 4 批删重复类时漏了 L0 还在用的 `GradingPage.select_exam_by_index()`，直到全量才暴露 `AttributeError`。PO 是公共 API，改完至少跑一次 L0 冒烟 `pytest scripts/test_l0_smoke.py -q`。
 10. **同一份数据的两个视图，必须等两者一致再断言**：组卷页 `#metaCount`（卷头统计）与 `#sheetBody .paper-q`（卷面卡片）由 `applyHead()` / `renderSheet()` 先后写入，只等其中一个就会出现「统计 3 题、卷面 0 题」的中间态（§4 第 39 条）。凡是「计数 ↔ 列表」「标题 ↔ 明细」这类双视图，等待条件写**两者相等**，不写「任意一个非空」。
-11. **每次跑完用例都必须重新生成报告，这是必做动作不是可选项**：`pytest.ini` 带 `--clean-alluredir`，pytest 一启动就把 `report/allure-results` 清空（连 `environment.properties` 一起），所以跑完不生成，`report/allure-report/` 里躺的就是**上一轮的旧报告**——不报错、能打开，但结论是旧的，这种"看起来有报告"最危险。固定两条命令，二选一：`bash tools/gen_report.sh` 或 `D:/python/python.exe tools/gen_report.py`（等价，后者给 PyCharm/无声环境）。脚本一步做完 generate + 入口改名 `uireport.html` + 写环境信息 + 打印用例数；别手工 `allure generate`，会漏掉改名，出现"文档写 uireport、目录里只有 index"。
+11. **每次跑完用例都必须重新生成报告，这是必做动作不是可选项**：`pytest.ini` 带 `--clean-alluredir`，pytest 一启动就把 `report/allure-results` 清空（连 `environment.properties` 一起），所以跑完不生成，`report/allure-report/` 里躺的就是**上一轮的旧报告**——不报错、能打开，但结论是旧的，这种"看起来有报告"最危险。固定两条命令，二选一：`bash tools/gen_report.sh` 或 `python tools/gen_report.py`（等价，后者给 PyCharm/无声环境）。脚本一步做完 generate + 入口改名 `uireport.html` + 写环境信息 + 打印用例数；别手工 `allure generate`，会漏掉改名，出现"文档写 uireport、目录里只有 index"。
 
     **它已经默认替你做完了**：`config.AUTO_REPORT` 默认开启，会话收尾（`pytest_unconfigure`）自动生成，输出末尾多一行 `[auto-report] 154 条 / 6.3s -> …`。也就是说 `pytest` 一条命令就够，无需再记 `gen_report`。只在两种情况关掉（`OE_AUTO_REPORT=0`）：反复调单条用例不想每轮多等 5~15s；或 results 交给 CI 统一出报告。自动模式**永不改变退出码**——生成失败只打一行警告，用例通过就是通过。

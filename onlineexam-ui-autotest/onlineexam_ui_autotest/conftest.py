@@ -49,8 +49,8 @@ def pytest_configure(config):
 
     `pytest.ini` 写的是 `--alluredir=report/allure-results`，pytest 不会把它
     解析成相对 rootdir，而是原样交给 allure 插件、由后者按**当前工作目录**
-    建目录。于是 `cd D:/onlineexam-ui-autotest && pytest` 会把结果写到
-    `D:/onlineexam-ui-autotest/report/`，而收尾的自动生成报告读的是
+    建目录。于是 `cd onlineexam-ui-autotest && pytest` 会把结果写到
+    `onlineexam-ui-autotest/report/`，而收尾的自动生成报告读的是
     `onlineexam_ui_autotest/report/allure-results`——读到上一轮旧结果，或者
     没结果可读直接跳过，两种情况都不报错，只是报告悄悄过期。
 

@@ -2,12 +2,12 @@
 """起服务 → 跑用例 → 关服务，一条命令完成（适合沙箱/CI 里没有后台进程管理的情况）。
 
     # 调优组：waitress + 连接复用，只跑混合场景
-    D:/OnlineExam/.venv/Scripts/python.exe scripts/run_with_server.py \
+    .venv/Scripts/python.exe scripts/run_with_server.py \
         --mode waitress --threads 8 --conn-max-age 60 \
         --suite waitress-conn60 --only mix50
 
     # runserver 口径重跑判分与混合
-    D:/OnlineExam/.venv/Scripts/python.exe scripts/run_with_server.py \
+    .venv/Scripts/python.exe scripts/run_with_server.py \
         --mode runserver --suite runserver --only grade10,mix50
 
 参数分两段：`--mode/--threads/--conn-max-age` 给服务器，其余透传给 `run_suite.py`。
@@ -25,7 +25,9 @@ import time
 from pathlib import Path
 
 WS = Path(__file__).resolve().parent.parent
-PY = Path("D:/OnlineExam/.venv/Scripts/python.exe")
+# 被测系统根目录：默认 D:/OnlineExam，可用环境变量 OE_PROJECT 覆盖
+PROJECT = Path(os.environ.get("OE_PROJECT", "D:/OnlineExam"))
+PY = PROJECT / ".venv" / "Scripts" / "python.exe"
 HOST = "127.0.0.1"
 PORT = 8024
 

@@ -1,7 +1,7 @@
 # OnlineExam UI 自动化测试 · Python 依赖
 #
 # 环境基线：Python 3.11（实测 3.11.2）｜Chrome 156（驱动随工程 tools/chromedriver.exe）
-# 安装：D:/python/python.exe -m pip install -r requirements.txt
+# 安装：python -m pip install -r requirements.txt
 # 版本取自 2026-11-05 交付环境的 pip list，按"能复现"原则精确锁定。
 
 pytest==9.0.1

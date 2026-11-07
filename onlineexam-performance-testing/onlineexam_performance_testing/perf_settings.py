@@ -1,7 +1,7 @@
 """压测环境配置（属于测试资产，放在压测工程里，不写进被测项目）。
 
 由 ``scripts/serve.py`` 通过 ``DJANGO_SETTINGS_MODULE=perf_settings`` 加载，
-加载时 ``D:/OnlineExam`` 与压测工程根目录都在 ``sys.path`` 上。
+加载时被测系统根目录（``OE_PROJECT``，默认 ``D:/OnlineExam``）与压测工程根目录都在 ``sys.path`` 上。
 
 与 ``OnlineExam.settings.development`` 的区别只有三点：
 

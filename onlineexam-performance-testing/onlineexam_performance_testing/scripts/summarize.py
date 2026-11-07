@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """把 report/results.csv 汇总成 Markdown 表格（写报告时直接粘）。
 
-    D:/OnlineExam/.venv/Scripts/python.exe scripts/summarize.py > report/summary.md
+    .venv/Scripts/python.exe scripts/summarize.py > report/summary.md
 
 同名 label 出现多次时以最后一行为准（中途重跑过同一个用例）。
 """

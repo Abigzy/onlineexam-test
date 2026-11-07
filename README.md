@@ -155,6 +155,30 @@ pip install -r requirements.txt
 
 ---
 
+## 环境与端口说明
+
+**被测系统路径**：本仓库所有脚本通过 `OE_PROJECT` 环境变量定位被测系统根目录，默认 `D:/OnlineExam`（即被测系统在本机的目录）。跨机器运行前设置：
+
+```bash
+export OE_PROJECT=/path/to/OnlineExam      # Git Bash / Linux / macOS
+set OE_PROJECT=D:\path\to\OnlineExam        # Windows cmd
+```
+
+> 各层 `docs/` 中的 `OnlineExam`（无盘符）指被测系统根目录，即上面 `OE_PROJECT` 指向的位置。
+
+**端口分工**（与主仓库一致，四层互不干扰）：
+
+| 用途 | 端口 | 涉及模块 |
+|---|---|---|
+| 开发默认（`run_dev.bat`） | 8000 | 主仓库 |
+| 功能测试 / 接口自动化 / 端到端冒烟 | **8777** | fun / api |
+| UI 自动化 | **8931** | ui |
+| 性能压测（Locust） | **8024** | performance |
+
+> UI 自动化需用系统 Python 3.11（含 selenium，项目 `.venv` 为 3.13 不含 selenium），详见 `onlineexam-ui-autotest/docs/04-环境搭建与元素定位.md`。
+
+---
+
 ## 与主仓库的关系
 
 - 主仓库 [`onlineexam-system`](https://github.com/Abigzy/onlineexam-system) 只含**被测系统**与 1200 条单元测试；

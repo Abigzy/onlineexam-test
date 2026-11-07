@@ -2,13 +2,13 @@
 """起压测用的应用服务器（三种口径，用于对照）。
 
     # 口径 1：Django 开发服务器（默认多线程）—— 历史基线的口径
-    D:/OnlineExam/.venv/Scripts/python.exe scripts/serve.py --server runserver
+    .venv/Scripts/python.exe scripts/serve.py --server runserver
 
     # 口径 2：开发服务器但强制单线程 —— 用来量化"串行处理"到底多贵
-    D:/OnlineExam/.venv/Scripts/python.exe scripts/serve.py --server runserver --nothreading
+    .venv/Scripts/python.exe scripts/serve.py --server runserver --nothreading
 
     # 口径 3：waitress（生产级 WSGI，8 线程）—— 最接近部署的一组
-    D:/OnlineExam/.venv/Scripts/python.exe scripts/serve.py --server waitress --threads 8
+    .venv/Scripts/python.exe scripts/serve.py --server waitress --threads 8
 
 设计说明：
   * 不修改被测项目的任何文件，settings 用本工程根目录的 ``perf_settings.py``；
@@ -24,7 +24,8 @@ import sys
 from pathlib import Path
 
 WS = Path(__file__).resolve().parent.parent
-PROJECT = Path("D:/OnlineExam")
+# 被测系统根目录：默认 D:/OnlineExam，可用环境变量 OE_PROJECT 覆盖
+PROJECT = Path(os.environ.get("OE_PROJECT", "D:/OnlineExam"))
 EXPECTED_DB = "online_exam_perf"
 
 

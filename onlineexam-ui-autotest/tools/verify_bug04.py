@@ -21,6 +21,8 @@ from datetime import datetime, timedelta, timezone
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 PROJ = os.path.join(os.path.dirname(ROOT), "onlineexam_ui_autotest")
+# 被测系统根目录：默认 D:/OnlineExam，可用环境变量 OE_PROJECT 覆盖
+PROJECT = os.environ.get("OE_PROJECT", "D:/OnlineExam")
 sys.path.insert(0, PROJ)
 
 import config                                                       # noqa: E402
@@ -135,13 +137,13 @@ def main():
         print("[INFO] 徽章颜色恒为 %r（STATUS_BADGE 的 key 是作答状态，非考试状态）" % cls)
 
         # ---------------- E 兜底 / F 守门（静态） ----------------
-        tpl = open("D:/OnlineExam/templates/exam/monitor.html", encoding="utf-8").read()
+        tpl = open(os.path.join(PROJECT, "templates", "exam", "monitor.html"), encoding="utf-8").read()
         check("E 模板兜底改成「—」",
               "computed_status_display || '—'" in tpl)
         check("E 模板不再用空串兜底",
               "computed_status_display || ''" not in tpl)
-        be = open("D:/OnlineExam/apps/exam/tests/test_api.py", encoding="utf-8").read()
-        fe = open("D:/OnlineExam/apps/system/tests/test_frontend_guards.py",
+        be = open(os.path.join(PROJECT, "apps", "exam", "tests", "test_api.py"), encoding="utf-8").read()
+        fe = open(os.path.join(PROJECT, "apps", "system", "tests", "test_frontend_guards.py"),
                   encoding="utf-8").read()
         check("F 后端守门：overview 字段断言存在",
               "test_overview_includes_status_display" in be)

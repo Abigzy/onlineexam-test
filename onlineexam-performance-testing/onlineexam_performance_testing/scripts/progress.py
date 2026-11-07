@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """查看进度：哪些用例已跑完、哪些还没跑。
 
-    D:/OnlineExam/.venv/Scripts/python.exe scripts/progress.py
+    .venv/Scripts/python.exe scripts/progress.py
 
 读 ``report/results.csv``（run_case.py 每跑完一个用例追加一行），
 对照 ``scripts/run_suite.py::CASES`` 的矩阵，输出 done / pending。

@@ -16,7 +16,7 @@ os.environ["NO_PROXY"] = os.environ["no_proxy"] = "127.0.0.1,localhost"
 
 # ------------------------------------------------------------------ 路径
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))          # onlineexam_ui_autotest/
-WORKSPACE = os.path.dirname(PROJECT_DIR)                          # D:/onlineexam-ui-autotest
+WORKSPACE = os.path.dirname(PROJECT_DIR)                          # onlineexam-ui-autotest
 TOOLS_DIR = os.path.join(WORKSPACE, "tools")
 
 DATA_DIR = os.path.join(PROJECT_DIR, "data")

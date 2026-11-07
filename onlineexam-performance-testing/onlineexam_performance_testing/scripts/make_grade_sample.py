@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """构造「一个班的待批卷」：清空作答记录，再用真实接口产生 N 份已交卷。
 
-    D:/OnlineExam/.venv/Scripts/python.exe scripts/make_grade_sample.py --count 50
+    .venv/Scripts/python.exe scripts/make_grade_sample.py --count 50
 
 为什么需要它：判分场景要压的是「教师批一个班」，而不是「批 1600 份历史作答」。
 前者 `GET /grading/queue/` 约几百毫秒，后者实测 10-12 秒——那属于容量问题，

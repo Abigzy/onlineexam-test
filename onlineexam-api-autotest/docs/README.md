@@ -1,7 +1,7 @@
 # OnlineExam 接口自动化测试 · 工作区
 
-> 被测系统：`D:/OnlineExam`（基于 Django 的 AI 在线考试与学情分析系统）
-> 自动化工程：`D:/onlineexam-api-autotest/onlineexam_api_autotest`（第 5 步起已解冻，骨架与 L0 冒烟已就绪）
+> 被测系统：`OnlineExam`（基于 Django 的 AI 在线考试与学情分析系统）
+> 自动化工程：`onlineexam-api-autotest/onlineexam_api_autotest`（第 5 步起已解冻，骨架与 L0 冒烟已就绪）
 > 流程：需求分析 → API 文档分析与评审 → 测试计划 → 用例设计与评审 → 环境搭建 → 执行用例 → 缺陷管理 → 测试报告
 
 ---
@@ -31,7 +31,7 @@
 ## 二、目录约定
 
 ```
-D:/onlineexam-api-autotest/
+onlineexam-api-autotest/
 ├── docs/
 │   ├── README.md                     ← 本文件（进度看板）
 │   ├── 01-需求分析.md
@@ -71,7 +71,7 @@ D:/onlineexam-api-autotest/
 | 鉴权 | JWT，`Authorization: Bearer <access>`；access 2h、refresh 7d 且轮换 |
 | 统一响应体 | `{code, message, data}`；成功判定 **只看 `code == 0`** |
 | 演示账号 | `admin` / `teacher` / `student` / `os_teacher` / `net_teacher` / `arch_teacher`，密码统一 `Exam@123456` |
-| 已有功能测试资产 | `D:/毕设/exam-fun-test`（功能 246 条全通过、7 缺陷闭环；接口契约矩阵 124 操作 × 4 身份、661 断言 + 学生视角敏感字段黑名单；含性能报告） |
+| 已有功能测试资产 | `onlineexam-fun-test`（功能 246 条全通过、7 缺陷闭环；接口契约矩阵 124 操作 × 4 身份、661 断言 + 学生视角敏感字段黑名单；含性能报告） |
 | 已有自动化基线 | 单测 1172 passed（2 skipped）、端到端冒烟 196 项、内联 JS 26 块 |
 | 接口文档生成 | `python manage.py spectacular --file openapi.yaml`（25 warning / 125 error，不影响调用） |
 
@@ -80,4 +80,4 @@ D:/onlineexam-api-autotest/
 1. **不臆造需求**：需求与实现冲突时，先记为"待确认问题"，用例中同时标注"实际行为"与"应然行为"。
 2. **证据先行**：任何缺陷结论必须附"请求报文 + 响应报文 + 复现步骤 + 复现率"。
 3. **数据可回收**：所有自动化造数带统一前缀（如 `at_<时间戳>`），执行后可识别清理，不污染演示数据。
-4. **阶段冻结**：第 5 步之前不改 `onlineexam_api_autotest`；被测项目 `D:/OnlineExam` 只读，除经确认的测试数据外不改代码。
+4. **阶段冻结**：第 5 步之前不改 `onlineexam_api_autotest`；被测项目 `OnlineExam` 只读，除经确认的测试数据外不改代码。

@@ -15,7 +15,10 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 
 # PATH 上的 chromedriver 是 143，与 Chrome 156 不匹配；显式指定 156 驱动
-DRIVER = os.environ.get("OE_CHROMEDRIVER", "D:/OnlineExam/scripts/drivers/chromedriver.exe")
+DRIVER = os.environ.get(
+    "OE_CHROMEDRIVER",
+    os.path.join(os.environ.get("OE_PROJECT", "D:/OnlineExam"), "scripts", "drivers", "chromedriver.exe"),
+)
 
 BASE = os.environ.get("OE_BASE", "http://127.0.0.1:8931")
 USERNAME = "student"

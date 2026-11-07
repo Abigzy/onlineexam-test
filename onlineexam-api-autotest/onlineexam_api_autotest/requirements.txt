@@ -2,10 +2,10 @@
 #
 # 适用范围：本工程 onlineexam_api_autotest/
 # Python：  >= 3.11（实测 3.13.14）
-# 版本基准：D:/OnlineExam/.venv 实际运行环境，2026-11-04 导出
+# 版本基准：OnlineExam/.venv 实际运行环境，2026-11-04 导出
 #
 # 安装（务必用被测项目的 venv，不要用全局 python）：
-#   D:/OnlineExam/.venv/Scripts/python.exe -m pip install -r requirements.txt
+#   OnlineExam/.venv/Scripts/python.exe -m pip install -r requirements.txt
 #
 # 说明：pytest 9.x 对 pythonpath / addopts 的行为与 7.x 略有差异，
 #       pytest.ini 里的 --strict-markers、filterwarnings 已按 9.x 编写，请勿降级到 7.x。
@@ -25,7 +25,7 @@ PyYAML==6.0.3
 PyMySQL==1.2.3
 
 # --- 可选：仅造数脚本 scripts/seed_env.py 需要 ---
-# 该脚本直接 import 被测项目的 Django ORM（apps.*），必须在 D:/OnlineExam 目录下、
+# 该脚本直接 import 被测项目的 Django ORM（apps.*），必须在 OnlineExam 目录下、
 # 用被测项目自身的环境执行；日常跑测试用例不依赖下面两行，故默认注释。
 # 若确实要在此 venv 中重跑造数，取消注释：
 # Django==4.2.30

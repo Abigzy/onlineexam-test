@@ -4,9 +4,9 @@
 用法::
 
     # 服务端已起在 8024，先跑 runserver 轮
-    D:/OnlineExam/.venv/Scripts/python.exe scripts/run_suite.py --server runserver
+    .venv/Scripts/python.exe scripts/run_suite.py --server runserver
     # 换 waitress 起服务后跑对照轮
-    D:/OnlineExam/.venv/Scripts/python.exe scripts/run_suite.py --server waitress
+    .venv/Scripts/python.exe scripts/run_suite.py --server waitress
 
 设计取舍：每档之间不重建库。重建会让"第 5 档"和"第 1 档"面对不同数据量，
 反而失去可比性；本套件用固定的 `users` 递增观察趋势，累积效应留给 soak 阶段专门暴露。
@@ -16,12 +16,15 @@ from __future__ import annotations
 
 import argparse
 import csv
+import os
 import subprocess
 import sys
 from pathlib import Path
 
 WS = Path(__file__).resolve().parent.parent
-PY = Path("D:/OnlineExam/.venv/Scripts/python.exe")
+# 被测系统根目录：默认 D:/OnlineExam，可用环境变量 OE_PROJECT 覆盖
+PROJECT = Path(os.environ.get("OE_PROJECT", "D:/OnlineExam"))
+PY = PROJECT / ".venv" / "Scripts" / "python.exe"
 
 # (场景类, 并发, 爬升, 秒, 标签后缀, 说明)
 CASES = [

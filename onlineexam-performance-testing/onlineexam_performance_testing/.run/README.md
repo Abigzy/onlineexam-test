@@ -1,6 +1,6 @@
 # PyCharm 运行配置
 
-工程根目录（PyCharm 里打开这个文件夹）：`D:\onlineexam-performance-testing\onlineexam_performance_testing`
+工程根目录（PyCharm 里打开这个文件夹）：`onlineexam_performance_testing`
 
 `.run/` 下的配置会被 PyCharm 自动识别，右上角下拉框直接选：
 

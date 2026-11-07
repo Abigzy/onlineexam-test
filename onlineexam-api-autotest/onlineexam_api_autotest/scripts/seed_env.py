@@ -7,9 +7,9 @@
   * 直接调 service 层可以一次拿到全部 id，测试更稳定。
 所以这里**只调 service，不写裸 SQL**，业务规则仍然生效。
 
-运行（必须用被测项目的虚拟环境）：
-    cd D:/onlineexam-api-autotest/onlineexam_api_autotest
-    D:/OnlineExam/.venv/Scripts/python.exe scripts/seed_env.py
+运行（必须用被测项目的虚拟环境，并设置 OE_PROJECT 指向被测系统）：
+    cd onlineexam-api-autotest/onlineexam_api_autotest
+    .venv/Scripts/python.exe scripts/seed_env.py
 
 产出：data/fixtures.json（测试只读这个文件，不关心数据库细节）
 """
@@ -21,7 +21,7 @@ import sys
 from datetime import timedelta
 from pathlib import Path
 
-PROJECT = Path("D:/OnlineExam")
+PROJECT = Path(os.environ.get("OE_PROJECT", "D:/OnlineExam"))
 sys.path.insert(0, str(PROJECT))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "OnlineExam.settings.development")
 

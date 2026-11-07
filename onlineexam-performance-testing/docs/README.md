@@ -1,7 +1,7 @@
 # OnlineExam 性能测试
 
-> 被测系统 `D:\OnlineExam`（不改一行代码）。
-> 关联测试：功能 `D:\毕设\exam-fun-test`、接口 `D:\onlineexam-api-autotest`、UI `D:\onlineexam-ui-autotest`。
+> 被测系统 `OnlineExam`（不改一行代码）。
+> 关联测试：功能 `onlineexam-fun-test`、接口 `onlineexam-api-autotest`、UI `onlineexam-ui-autotest`。
 
 ## 目录
 
@@ -47,13 +47,13 @@ onlineexam_performance_testing/        核心工程：代码 + 运行产物，�
 cd /d/onlineexam-performance-testing/onlineexam_performance_testing
 
 # 1) 看跑到哪了
-D:/OnlineExam/.venv/Scripts/python.exe scripts/progress.py
+OnlineExam/.venv/Scripts/python.exe scripts/progress.py
 
 # 2) 刷新数据状态：考试时间窗 + 重签 access token（simplejwt 只有 60 分钟）
-D:/OnlineExam/.venv/Scripts/python.exe scripts/seed.py --refresh-only
+OnlineExam/.venv/Scripts/python.exe scripts/seed.py --refresh-only
 
 # 3) 续跑（自动跳过已完成的用例；起停服务一条命令搞定）
-D:/OnlineExam/.venv/Scripts/python.exe scripts/run_with_server.py \
+OnlineExam/.venv/Scripts/python.exe scripts/run_with_server.py \
     --mode waitress --threads 8 --conn-max-age 60 \
     --suite waitress-conn60 --resume
 ```

@@ -1,7 +1,10 @@
 @echo off
 chcp 65001 >nul
 title OnlineExam API Server - 127.0.0.1:8777
-cd /d D:\OnlineExam
+
+rem 被测系统根目录：默认 D:\OnlineExam，可用环境变量 OE_PROJECT 覆盖
+if "%OE_PROJECT%"=="" set OE_PROJECT=D:\OnlineExam
+cd /d "%OE_PROJECT%"
 
 if not exist ".venv\Scripts\python.exe" (
     echo [ERROR] venv not found: D:\OnlineExam\.venv\Scripts\python.exe

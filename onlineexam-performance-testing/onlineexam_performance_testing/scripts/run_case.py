@@ -3,7 +3,7 @@
 
 用法::
 
-    D:/OnlineExam/.venv/Scripts/python.exe scripts/run_case.py \
+    .venv/Scripts/python.exe scripts/run_case.py \
         --label rs_step_050 --server runserver \
         --scenario ExamSubmitUser --users 50 --spawn 5 --duration 90
 
@@ -32,7 +32,9 @@ from pathlib import Path
 import psutil
 
 WS = Path(__file__).resolve().parent.parent
-LOCUST = Path("D:/OnlineExam/.venv/Scripts/locust.exe")
+# 被测系统根目录：默认 D:/OnlineExam，可用环境变量 OE_PROJECT 覆盖
+PROJECT = Path(os.environ.get("OE_PROJECT", "D:/OnlineExam"))
+LOCUST = PROJECT / ".venv" / "Scripts" / "locust.exe"
 REPORT = WS / "report"
 RESULTS = REPORT / "results.csv"
 

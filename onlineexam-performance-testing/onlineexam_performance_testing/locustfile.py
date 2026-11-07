@@ -60,15 +60,16 @@ def _first_existing(*candidates: Path) -> Path:
 # 压测工程与被测项目解耦：种子数据仍由 OnlineExam/scripts/perf_seed.py 产出，
 # 这里按「环境变量 → 本工作区 scripts/ → 被测项目 scripts/」的顺序找，
 # 不复制种子文件，保证账号/考试 ID 永远只有一份真源。
+_PROJECT = Path(os.environ.get("OE_PROJECT", "D:/OnlineExam"))
 META_FILE = _first_existing(
     Path(os.environ.get("PERF_META_FILE", "") or HERE / "scripts" / ".perf_meta.json"),
     HERE / "scripts" / ".perf_meta.json",
-    Path("D:/OnlineExam/scripts/.perf_meta.json"),
+    _PROJECT / "scripts" / ".perf_meta.json",
 )
 TOKEN_FILE = _first_existing(
     Path(os.environ.get("PERF_TOKEN_FILE", "") or HERE / "scripts" / ".perf_tokens.json"),
     HERE / "scripts" / ".perf_tokens.json",
-    Path("D:/OnlineExam/scripts/.perf_tokens.json"),
+    _PROJECT / "scripts" / ".perf_tokens.json",
 )
 
 API = os.environ.get("PERF_API_PREFIX", "/api/v1").rstrip("/")

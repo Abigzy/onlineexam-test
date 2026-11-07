@@ -6,8 +6,8 @@
   * 核对接口返回值是否真的落库。
 业务结论优先从接口取，查库只做补充证据。
 
-连接参数从被测项目的 `.env` 读取（默认 D:/OnlineExam/.env），
-避免把口令写进测试代码；可用 EXAM_ENV_FILE 指定其他文件。
+连接参数从被测项目的 `.env` 读取（默认取被测系统根目录下的 `.env`），
+避免把口令写进测试代码；可用 `EXAM_ENV_FILE` 指定其他文件、`OE_PROJECT` 指定被测系统根目录。
 """
 import os
 
@@ -28,7 +28,10 @@ def _load_env(path: str) -> dict:
     return data
 
 
-_ENV = _load_env(os.environ.get("EXAM_ENV_FILE", "D:/OnlineExam/.env"))
+_ENV = _load_env(os.environ.get(
+    "EXAM_ENV_FILE",
+    os.path.join(os.environ.get("OE_PROJECT", "D:/OnlineExam"), ".env"),
+))
 
 
 class DbTools(object):

@@ -2,7 +2,7 @@
 """环境自检：一次跑完，输出可直接贴进《环境搭建》文档的结论。
 
 用法：
-    D:/OnlineExam/.venv/Scripts/python.exe scripts/check_env.py
+    .venv/Scripts/python.exe scripts/check_env.py
 """
 from __future__ import annotations
 

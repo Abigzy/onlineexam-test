@@ -2,13 +2,13 @@
 """准备压测数据：调用被测项目自己的 seed 脚本，再补齐压测必需、但 seed 没管的两件事。
 
     # 全新准备（重建 130 个学生 + 1 份 20 题卷 + 1 场考试，并建立班级关系）
-    D:/OnlineExam/.venv/Scripts/python.exe scripts/seed.py --students 130
+    .venv/Scripts/python.exe scripts/seed.py --students 130
 
     # 只续期（隔天继续跑时，考试时间窗已过，跑这个即可）
-    D:/OnlineExam/.venv/Scripts/python.exe scripts/seed.py --refresh-only
+    .venv/Scripts/python.exe scripts/seed.py --refresh-only
 
     # 每轮压测前清空作答记录（避免 max_attempts 被打满导致 104xx 业务失败）
-    D:/OnlineExam/.venv/Scripts/python.exe scripts/seed.py --refresh-only --reset-attempts
+    .venv/Scripts/python.exe scripts/seed.py --refresh-only --reset-attempts
 
 为什么需要补两步（**不是**急着改被测项目）：
 
@@ -31,7 +31,8 @@ import sys
 from pathlib import Path
 
 WS = Path(__file__).resolve().parent.parent
-PROJECT = Path("D:/OnlineExam")
+# 被测系统根目录：默认 D:/OnlineExam，可用环境变量 OE_PROJECT 覆盖
+PROJECT = Path(os.environ.get("OE_PROJECT", "D:/OnlineExam"))
 PY = PROJECT / ".venv" / "Scripts" / "python.exe"
 EXPECTED_DB = "online_exam_perf"
 CLASS_NAME = "压测教学班"
