@@ -123,7 +123,7 @@ onlineexam-test/
 | 性能测试 | `onlineexam-performance-testing/onlineexam_performance_testing/report/opt_*.html` | 连接复用优化后 9 个场景的 Locust 报告（RPS/P95 曲线） |
 
 > **打开方式**：Locust 报告为自包含 HTML（内嵌 ECharts，双击即可打开）；Allure 报告是「入口 + data 目录」结构，
-> 需起静态服务器后查看：`cd report/allure-report && python -m http.server 8000` 再访问 `http://127.0.0.1:8000/uireport.html`（或用 `allure open`）。
+> 需起静态服务器后查看：`cd report/allure-report && python -m http.server 8899` 再访问 `http://127.0.0.1:8899/uireport.html`（或 `bash tools/serve_report.sh`、`allure open`）。
 > 性能中间轮次、对照组、原始 CSV 未入库，需要完整数据可本地重跑（命令见各模块 `docs/`）。
 
 ---
