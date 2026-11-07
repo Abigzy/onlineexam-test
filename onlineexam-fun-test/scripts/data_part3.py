@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """功能测试用例数据（第三批）：判分 / 学情 / 推荐 / 作弊检测 / 班级 / 管理端 / 页面交互。"""
 
-from .data_part1 import C
+from data_part1 import C
 
 CASES = []
 

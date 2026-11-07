@@ -7,7 +7,7 @@
   * 结果写 docs/.exec_results.json，供 build_xlsx 回填「执行结果」。
 
 用法：
-    python -m scripts.testcase_gen.exec_live
+    python exec_live.py
 """
 
 import json
@@ -461,7 +461,7 @@ if __name__ == "__main__":
                 traceback.print_exc()
         ok = sum(1 for x in RESULTS if x["result"] == "通过")
         print(f"\n共执行 {len(RESULTS)} 条：通过 {ok}，失败 {len(RESULTS) - ok}")
-        out = os.path.join("docs", ".exec_results.json")
+        out = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".exec_results.json")
         with open(out, "w", encoding="utf-8") as f:
             json.dump(RESULTS, f, ensure_ascii=False, indent=2)
         print("结果已写入", out)

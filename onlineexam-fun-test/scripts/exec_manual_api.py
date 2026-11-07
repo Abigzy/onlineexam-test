@@ -183,5 +183,5 @@ if __name__ == "__main__":
     finally:
         ok = sum(1 for x in RESULTS if x["result"] == "通过")
         print(f"\n共 {len(RESULTS)} 条：通过 {ok}，失败 {len(RESULTS)-ok}")
-        with open(os.path.join("docs", ".exec_manual_api.json"), "w", encoding="utf-8") as f:
+        with open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".exec_manual_api.json"), "w", encoding="utf-8") as f:
             json.dump(RESULTS, f, ensure_ascii=False, indent=2)

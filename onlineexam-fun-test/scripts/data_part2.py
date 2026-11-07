@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """功能测试用例数据（第二批）：题库 / 试卷与组卷 / 在线考试。"""
 
-from .data_part1 import C
+from data_part1 import C
 
 CASES = []
 

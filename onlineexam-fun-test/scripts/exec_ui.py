@@ -26,7 +26,7 @@ PWD = "Exam@123456"
 DRIVER = os.environ.get(
     "CHROMEDRIVER", os.path.join("scripts", "drivers", "chromedriver.exe")
 )
-SHOT_DIR = os.path.join("docs", "exec_shots")
+SHOT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "exec_shots")
 RESULTS = []
 EXAM_ID = 21
 TMP_USER = f"ui_tc_{time.strftime('%H%M%S')}"
@@ -394,5 +394,5 @@ if __name__ == "__main__":
     finally:
         ok = sum(1 for x in RESULTS if x["result"] == "通过")
         print(f"\n共 {len(RESULTS)} 条：通过 {ok}，失败 {len(RESULTS)-ok}")
-        with open(os.path.join("docs", ".exec_ui.json"), "w", encoding="utf-8") as fp:
+        with open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".exec_ui.json"), "w", encoding="utf-8") as fp:
             json.dump(RESULTS, fp, ensure_ascii=False, indent=2)
