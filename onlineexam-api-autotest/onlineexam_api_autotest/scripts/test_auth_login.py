@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""登录用例（IHRM 数据驱动写法）。
+"""登录用例（JSON 数据驱动写法）。
 
 数据在 data/login_data.json：一条记录 = 一条用例，
 字段顺序 desc, req_data, status_code, code, message 与 parametrize 一一对应。

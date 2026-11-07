@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""JSON 数据驱动（对齐 IHRM 的 common/get_data.py）。
+"""JSON 数据驱动（标准分层的 common/get_data.py 写法）。
 
-IHRM 的做法：data/*.json 存"一条用例一条记录"，读取后转成
+通用做法：data/*.json 存"一条用例一条记录"，读取后转成
 `[(desc, req_data, status_code, code, message), ...]` 供 parametrize 使用。
 这里保留同一约定，但把"转元组"做成通用函数，并按需保留字典形态。
 """

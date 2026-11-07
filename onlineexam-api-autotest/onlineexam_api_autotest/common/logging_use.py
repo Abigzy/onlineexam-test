@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-"""日志初始化（对齐 IHRM 的 common/logging_use.py）。
+"""日志初始化（标准分层的 common/logging_use.py 写法）。
 
-与 IHRM 的差异只有一处：加了"已初始化"判断。
-IHRM 在类体里调用一次没问题；我们用例分散在多个文件，重复调用会挂多个 handler，
+与通用实现的差异只有一处：加了"已初始化"判断。
+通用实现在类体里调用一次没问题；我们用例分散在多个文件，重复调用会挂多个 handler，
 导致一条日志打印 N 遍。
 """
 import logging

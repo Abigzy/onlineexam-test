@@ -16,7 +16,7 @@
 | 层次 | 目录 | 技术栈 | 用例规模 | 结果 |
 |---|---|---|---|---|
 | 功能测试 | `onlineexam-fun-test/` | 手工 + 用例基线（xlsx/xmind/md） | **246 条** | 246 通过 / 0 失败 / 0 阻塞，7 缺陷全修复 |
-| 接口自动化 | `onlineexam-api-autotest/` | pytest + requests（IHRM 约定） | **229 条** | 229 passed / 0 failed / 0 xfail（49.2s），3 缺陷全关闭 |
+| 接口自动化 | `onlineexam-api-autotest/` | pytest + requests（标准分层） | **229 条** | 229 passed / 0 failed / 0 xfail（49.2s），3 缺陷全关闭 |
 | UI 自动化 | `onlineexam-ui-autotest/` | pytest + Selenium 4.38 + PO + Allure | **150 条**（P0 28 / P1 74 / P2 48） | 154 项（150 用例 + 4 缺陷守卫）→ 151 passed / 3 skipped / 0 failed（17m51s），4 缺陷全关闭 |
 | 性能测试 | `onlineexam-performance-testing/` | Locust 2.47.0 | 50 并发验收 + 三组环境对照 | 连接复用后 45.2 RPS / P95 0.84s，四场景达标 |
 
@@ -84,7 +84,7 @@ onlineexam-test/
 
 ### 2. 接口自动化 `onlineexam-api-autotest/`
 
-- **技术栈**：pytest + requests，目录按 IHRM 约定（`config.py + common + encap_api + scripts + data`）。
+- **技术栈**：pytest + requests，目录按标准分层（`config.py + common + encap_api + scripts + data`）。
 - **规模**：229 条（正向 129 / 反向 135 中的可自动化部分，覆盖 124/124 个接口操作）。
 - **结论**：全量 **229 passed / 0 failed / 0 xfail**（约 49.2s，连跑两轮一致）；3 个缺陷（2 严重 + 1 一般）全部关闭。
 - **运行**：先起被测服务（`python manage.py runserver 127.0.0.1:8777`），再 `cd onlineexam_api_autotest && pytest`。

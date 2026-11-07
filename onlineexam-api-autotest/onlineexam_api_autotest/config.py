@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""项目级常量（对齐 IHRM 的 config.py 用法）。
+"""项目级常量（标准分层的 config.py 写法）。
 
-IHRM 里 config.py 只放 `BASE_DIR` 和少量常量；这里保留同样的入口，
+config.py 只放 `BASE_DIR` 和少量常量；这里保留同样的入口，
 运行期的完整配置（超时、账号池、环境地址）仍在 `common/config.py`。
 """
 import os

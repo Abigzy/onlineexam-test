@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""获取 token（对齐 IHRM 的 common/get_token.py）。
+"""获取 token（标准分层的 common/get_token.py 写法）。
 
-IHRM 每次调用都登录一次；这里加一层缓存，原因是本项目 `auth` 限流 30/min，
+通用实现每次调用都登录一次；这里加一层缓存，原因是本项目 `auth` 限流 30/min，
 全量用例重复登录会在第 31 条开始集体 429。
 """
 from common.auth import login

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""数据库工具（对齐 IHRM 的 common/db_tools.py）。
+"""数据库工具（标准分层的 common/db_tools.py 写法）。
 
 用途仅限"造数/校验的最后一公里"：
   * 把 `deadline_at` 改到过去，稳定复现超时交卷（不 sleep）；

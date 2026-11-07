@@ -15,7 +15,7 @@
 | 2 | API 文档分析与评审 | ✅ 已完成（V2 复核 11-03） | `docs/02-接口文档分析与评审.md` | V1 提 6 项问题，开发已修 5 项、1 项不彻底；残留 D-03R / D-01R / D-02R 见 §10 |
 | 3 | 测试计划编写 | ✅ 已完成（11-03） | `docs/03-测试计划.md` | 5 层策略、约 215 条用例、13 人日、进入/准出标准、10 项风险、3 个默认假设 |
 | 4 | 用例设计与评审 | ✅ 已完成（11-03） | `docs/04-测试用例.md`、`docs/04-用例评审记录.md`、`OnlineExam接口测试思维导图.xmind` | 264 条（正向 129 / 反向 135），P0 158；105 操作直接覆盖 + 19 同源合并 = 124/124；12 项评审问题已修订 |
-| 5 | 环境搭建 | ✅ 已完成（11-03，IHRM 对齐） | `docs/05-环境搭建.md`、`onlineexam_api_autotest/` 工程骨架 | 服务 8777 + MySQL 可用；**33 passed / 7.62s**、`report/report.html` 已生成；目录按 IHRM 约定（config.py + common + encap_api + scripts + data JSON） |
+| 5 | 环境搭建 | ✅ 已完成（11-03，标准结构对齐） | `docs/05-环境搭建.md`、`onlineexam_api_autotest/` 工程骨架 | 服务 8777 + MySQL 可用；**33 passed / 7.62s**、`report/report.html` 已生成；目录按标准分层（config.py + common + encap_api + scripts + data JSON） |
 | 6 | 执行用例 | ✅ 已完成（11-03，含 3 轮修复回归） | `docs/06-执行记录.md`、`report/report.html`、`log/` | 全量 **229 passed / 0 failed / 0 xfail / 49.2s**（连跑两轮一致）；限流专项 2 条单独跑（`-m slow`）；总自动化 **229 条**；修复验证见 §11–§12 |
 | 7 | 缺陷管理 | ✅ 已完成（11-03） | `docs/07-缺陷管理.md` | 缺陷 3 条（2 严重 + 1 一般）**全部关闭**：BUG-01 可见性口径、BUG-02 批量暂存 500、BUG-03 单题超时结算；观察项 10 条已收敛 |
 | 8 | 测试报告 | ✅ 已完成（11-03） | `docs/08-测试报告.md` | 结论：**可以上线**（3 条缺陷全关闭、无 xfail 残留）；含覆盖分析、风险评估、放行建议、改进建议 |
@@ -50,8 +50,8 @@ onlineexam-api-autotest/
 │       ├── openapi.yaml              ← 由 `manage.py spectacular` 生成（接口事实来源）
 │       ├── 接口操作清单-124.txt      ← 方法 + 路径全量清单
 │       └── build_xmind.py            ← 由用例文档生成 xmind 的脚本
-└── onlineexam_api_autotest/                ← 第 5 步起已解冻（目录按 IHRM 约定）
-    ├── config.py                    IHRM 风格常量入口
+└── onlineexam_api_autotest/                ← 第 5 步起已解冻（目录按标准分层）
+    ├── config.py                    常量入口
     ├── conftest.py                  角色客户端 + 常用 ID
     ├── common/                      配置/客户端/鉴权/断言/日志/数据/DB
     ├── encap_api/                   接口封装（7 个业务域模块）

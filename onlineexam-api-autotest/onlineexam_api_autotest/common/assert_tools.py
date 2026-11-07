@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-"""公共断言（对齐 IHRM 的 common/assert_tools.py）。
+"""公共断言（标准分层的 common/assert_tools.py 写法）。
 
-IHRM 的签名是 `common_assert(res, status_code, success, code, message)`；
+通用签名是 `common_assert(res, status_code, success, code, message)`；
 本项目响应体是 `{code, message, data}`，没有 `success` 字段，因此把 success
-做成可选参数：传了就按 IHRM 语义校验（success 等价于 code == 0），不传则忽略。
+做成可选参数：传了就按该语义校验（success 等价于 code == 0），不传则忽略。
 """
 from common.client import ApiResponse
 
 
 class CommonAssert(object):
-    """一个入口覆盖 IHRM 风格的全部断言维度。"""
+    """一个入口覆盖全部断言维度。"""
 
     @classmethod
     def common_assert(cls, res: ApiResponse, status_code: int,
@@ -25,7 +25,7 @@ class CommonAssert(object):
             assert res.code == code, (
                 f"业务码不符：期望 {code}，实际 {res.code} | {res.method} {res.path}"
             )
-        # 3) IHRM 的 success 语义（本项目用 code == 0 表达）
+        # 3) success 语义（本项目用 code == 0 表达）
         if success is not None:
             actual = res.code == 0
             assert actual is success, (
